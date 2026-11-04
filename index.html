@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Caso La Ceiba: recurso interactivo sobre evaluación del rendimiento y mejora continua del gobierno de datos. Fundamentos de Inteligencia de Negocios y Gobierno de Datos, CUN.">
+<title>Caso La Ceiba</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap">
+<style>
+/* Expediente por pasos. Siempre oscuro. Cada pantalla cabe sin scroll: la raíz escala con el alto y el ancho de la ventana. */
+:root{
+  --paper:#0A1520; --surface:#12222E; --surface-2:#182F3E; --ink:#EAF1F5; --ink-2:#A9BAC6; --line:#27404F;
+  --accent:#A5F01C; --on-accent:#0A1520;
+  --alert:#FF9B8A; --alert-bg:#3A201D; --ok:#7BE0A6; --ok-bg:#12301F; --warn:#FFC857; --warn-bg:#3A2D10;
+  --bar:#52687A; --code:#08111A;
+  --pc-c:#A5F01C; --pc-i:#5CC8FF; --pc-d:#FFC857; --pc-e:#C3A6FF; --pc-n:#FF9B8A; --pc-p:#4FE3C1;
+  --pc:var(--accent);
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --f-serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Consolas,'Courier New',monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{font-size:clamp(12px,calc(.45vw + 1.05vh),19px);background:var(--paper);height:100%}
+@media (max-width:700px){html{font-size:15px}}
+body{margin:0;height:100dvh;overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr) auto;color:var(--ink);font-family:var(--f-body);line-height:1.5;-webkit-text-size-adjust:100%;
+  background:
+    radial-gradient(60rem 36rem at 92% -10%,rgba(165,240,28,.10),transparent 60%),
+    radial-gradient(50rem 30rem at -10% 110%,rgba(92,200,255,.07),transparent 60%),
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/3rem 3rem,
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/3rem 3rem,
+    var(--paper)}
+h1,h2,h3,p,ul,ol,dl,dd,figure,blockquote{margin:0}
+ul,ol{padding:0}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.mono{font-family:var(--f-mono)}
+
+/* cabecera */
+.top{padding-top:env(safe-area-inset-top,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:rgba(10,21,32,.86);backdrop-filter:blur(6px)}
+.top-in{max-width:76rem;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:.45rem 0}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink);text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:.5rem}
+.brand i{display:inline-block;width:.8rem;height:.8rem;border-radius:2px;background:var(--accent)}
+.nav{flex:1 1 auto;min-width:0;display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-family:var(--f-body);font-size:.82rem;font-weight:600;color:var(--ink-2);text-decoration:none;padding:.45rem .6rem;border-radius:4px;white-space:nowrap;border:1px solid transparent}
+.nav a:hover{color:var(--ink);background:var(--surface)}
+.nav a[aria-current]{background:var(--accent);color:var(--on-accent);font-weight:500}
+.prog{height:3px;background:var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+
+/* escenario */
+.stage{position:relative;min-height:0}
+.slide{position:absolute;inset:0;display:none;overflow-y:auto;overflow-x:hidden;padding:.6rem max(16px,env(safe-area-inset-right,0px)) .8rem max(16px,env(safe-area-inset-left,0px));scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.slide.on{display:flex;animation:inn .28s ease-out}
+@keyframes inn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide:focus{outline:none}
+.in{width:100%;max-width:76rem;margin:auto;display:flex;flex-direction:column;gap:.8rem}
+
+/* pager */
+.pager{padding:.55rem max(16px,env(safe-area-inset-right,0px)) calc(.55rem + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:rgba(10,21,32,.9)}
+.pager-in{max-width:76rem;margin:0 auto;display:flex;align-items:center;gap:1rem}
+.pager-c{flex:1 1 auto;min-width:0;text-align:center;font-family:var(--f-body);font-size:.85rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pager-c b{color:var(--ink);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.6rem 1.1rem;font-weight:600;min-height:44px;text-decoration:none}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.ghost{background:transparent}
+.btn:hover:not(:disabled){filter:brightness(1.12)}
+.btn:disabled{opacity:.35;cursor:default}
+@media (max-width:560px){.pager-st{display:none}.btn{padding:.6rem .8rem}}
+
+/* tipografía */
+.eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-family:var(--f-body);font-size:.92rem;font-weight:600;letter-spacing:.005em;color:var(--pc)}
+.eyebrow::before{content:"";width:1.5rem;height:2px;border-radius:2px;background:var(--pc);flex:none}
+h1{font-family:var(--f-display);font-weight:800;font-size:3.6rem;line-height:.98;letter-spacing:-.025em;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:750;font-size:2rem;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;margin-top:.3rem}
+h3{font-family:var(--f-display);font-weight:650;font-size:1.1rem;line-height:1.2}
+.sub{color:var(--ink-2);font-size:1rem;max-width:62rem;margin-top:.45rem}
+.def{font-family:var(--f-serif);font-size:1.45rem;line-height:1.4;max-width:60rem;font-weight:450}
+.note{font-size:.82rem;color:var(--ink-2)}
+.nx{font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pc);padding:.1rem 0 .1rem .75rem}
+.nx b{color:var(--ink)}
+.tag{display:inline-block;font-family:var(--f-body);font-size:.8rem;font-weight:700;background:var(--code);border:1px solid var(--line);border-radius:4px;padding:.1rem .5rem;color:var(--pc)}
+
+/* tarjetas de concepto */
+.cards{display:grid;gap:.75rem;counter-reset:k}
+.cards.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cards.n4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cards.n5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cards.n6{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.cards.n4,.cards.n5,.cards.n6,.cards.n3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.cards.n2,.cards.n3,.cards.n4,.cards.n5,.cards.n6{grid-template-columns:minmax(0,1fr)}}
+.k{counter-increment:k;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:8px;padding:.95rem 1.05rem}
+.k::before{content:counter(k,decimal-leading-zero);display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--pc);margin-bottom:.25rem}
+.k b{display:block;font-family:var(--f-display);font-weight:650;font-size:1.2rem;line-height:1.2;margin-bottom:.3rem}
+.k p{font-size:.97rem;color:var(--ink-2);line-height:1.45}
+.k p+p{margin-top:.35rem}
+.k .eg{color:var(--ink);font-size:.88rem}
+.split2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:start}
+@media (max-width:820px){.split2{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.96rem}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--f-body);font-size:.85rem;color:var(--pc);background:var(--code);font-weight:700}
+td:first-child{font-weight:700;white-space:nowrap}
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;list-style:none}
+.pills li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.25rem .7rem;font-size:.8rem}
+.pills li b{color:var(--pc)}
+.callout{padding:.75rem 1rem;border-left:4px solid var(--pc);background:var(--surface);border-radius:0 8px 8px 0;font-size:1rem;max-width:62rem}
+.callout.alert{border-color:var(--alert);background:var(--alert-bg)}
+
+/* inicio */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:2.2rem;align-items:center}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-l{display:flex;flex-direction:column;gap:1.1rem}
+.lede{font-family:var(--f-serif);font-size:1.4rem;line-height:1.42;font-weight:420;max-width:34rem}
+.lede em{color:var(--accent);font-style:italic}
+.pp{border-left:4px solid var(--accent);padding:.1rem 0 .1rem 1rem;max-width:36rem}
+.pp-q{font-family:var(--f-display);font-weight:600;font-size:1.08rem;line-height:1.35;margin-top:.3rem}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1.1rem}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1.2rem 3rem rgba(0,0,0,.35)}
+.rec-h{display:flex;justify-content:space-between;gap:.8rem;background:#050C12;font-family:var(--f-body);font-weight:600;font-size:.85rem;padding:.6rem .85rem}
+.rec-st{color:var(--accent)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--line)}
+.seg button{background:transparent;border:0;border-right:1px solid var(--line);padding:.55rem .3rem;min-height:44px;font-weight:600;font-size:.85rem}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.rec-f{padding:.3rem .85rem}
+.rec-f>div{display:grid;grid-template-columns:5.2rem minmax(0,1fr);gap:.6rem;padding:.5rem 0;border-bottom:1px dashed var(--line);align-items:baseline;font-size:.88rem}
+.rec-f>div:last-child{border-bottom:0}
+.rec-f dt{font-family:var(--f-body);font-size:.8rem;font-weight:600;color:var(--ink-2)}
+.rec-f dd{min-width:0;overflow-wrap:anywhere}
+.rec[data-s="enc"] .rec-f dd{font-family:var(--f-mono);font-size:.74rem;color:var(--ink-2)}
+.rec-c{padding:.65rem .85rem;background:var(--code);font-size:.82rem;color:var(--ink-2);min-height:4.6em}
+.bar{display:inline-block;height:1em;width:var(--w,4ch);background:var(--bar);vertical-align:-.14em;border-radius:1px}
+.redact{background:var(--bar);color:transparent;border:0;padding:0 .3em;border-radius:2px;font:inherit;line-height:inherit}
+.redact[aria-pressed="true"]{background:var(--alert-bg);color:var(--alert);font-weight:700}
+
+/* caso: línea de tiempo */
+.tl-rail{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.3rem;position:relative}
+.tl-rail::before{content:"";position:absolute;left:7%;right:7%;top:.62rem;height:2px;background:var(--line)}
+.tl-n{position:relative;background:transparent;border:0;padding:0;text-align:center;font-family:var(--f-body);font-weight:600;font-size:.82rem;color:var(--ink-2);min-height:44px}
+.tl-n i{display:block;width:1.25rem;height:1.25rem;border-radius:50%;margin:0 auto .35rem;background:var(--paper);border:2px solid var(--ink-2);position:relative}
+.tl-n.past i{background:var(--ink-2)}
+.tl-n.now i{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 .3rem rgba(165,240,28,.2)}
+.tl-n.now{color:var(--accent);font-weight:500}
+.tl-panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.4rem 1.6rem;display:flex;flex-direction:column;gap:.8rem;min-height:18rem}
+.tl-t{font-family:var(--f-display);font-weight:800;font-size:3.6rem;line-height:1;letter-spacing:-.03em;color:var(--accent)}
+.tl-h{font-family:var(--f-display);font-weight:700;font-size:1.75rem;line-height:1.15;letter-spacing:-.01em}
+.tl-p{font-family:var(--f-serif);font-size:1.55rem;line-height:1.45;max-width:54rem}
+.tl-log{margin-top:auto;font-family:var(--f-mono);font-size:.76rem;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:.5rem .8rem;color:var(--ok);overflow-wrap:anywhere}
+.tl-log::before{content:"> ";color:var(--ink-2)}
+.tl-ctl{display:flex;justify-content:space-between;gap:1rem;align-items:center}
+.tl-ctl .note{flex:1;text-align:center}
+
+/* caso: nota y preguntas */
+.ransom{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.25rem;font-family:var(--f-mono);font-size:1.05rem;line-height:1.85}
+.ransom .eyebrow{display:block;margin-bottom:.5rem;color:var(--alert)}
+.qs{display:grid;gap:.6rem}
+.q4{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.8rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem}
+.q4 .n{font-family:var(--f-display);font-weight:800;font-size:1.8rem;color:var(--accent);line-height:1}
+.q4 b{font-family:var(--f-display);font-weight:650;font-size:1.2rem;display:block;line-height:1.2}
+.q4 span{font-size:.88rem;color:var(--ink-2)}
+
+/* pilares */
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+@media (max-width:760px){.tri{grid-template-columns:minmax(0,1fr)}}
+.pil{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;border-top:4px solid var(--pc)}
+.pil .big{font-family:var(--f-display);font-weight:800;font-size:4rem;line-height:.9;color:var(--pc)}
+.pil h3{margin-top:.3rem;font-size:1.25rem}
+.pil p{font-size:.98rem;color:var(--ink-2);margin-top:.35rem}
+.pil .brk{color:var(--ink)}
+.pil .tags{display:flex;gap:.3rem;margin-top:.6rem;flex-wrap:wrap}
+
+/* aplicación */
+.ap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.1rem;align-items:start}
+@media (max-width:820px){.ap{grid-template-columns:minmax(0,1fr)}}
+.case-card{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--pc);border-radius:10px;padding:1rem 1.15rem;display:flex;flex-direction:column;gap:.55rem}
+.case-card h3{font-size:1.7rem;line-height:1.1}
+.case-card .tag{align-self:flex-start}
+.mini .tag{align-self:flex-start}
+.ev{font-family:var(--f-serif);font-size:1.15rem;line-height:1.45}
+.case-card .ev{font-size:1.32rem}
+.ctl{display:none;border-top:1px dashed var(--line);padding-top:.6rem}
+.ctl.on{display:block}
+.ctl b{font-size:.92rem;font-weight:700;color:var(--pc)}
+.ctl ul{margin-top:.3rem;padding-left:1.1rem;font-size:.97rem;color:var(--ink-2);display:flex;flex-direction:column;gap:.2rem}
+.ctl-ph{font-size:.82rem;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:.6rem}
+.ctl.on+.ctl-ph{display:none}
+.qside .ask{font-family:var(--f-display);font-weight:650;font-size:1.4rem;line-height:1.25}
+.qside .qo{font-size:1.05rem}
+.qside .fb{font-size:.98rem}
+.qopts{display:flex;flex-direction:column;gap:.4rem;margin-top:.6rem}
+.qopts.row{flex-direction:row;flex-wrap:wrap}
+.qopts.row .qo{flex:1 1 7rem}
+.qo{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.45rem .8rem;min-height:44px;text-align:left;font-weight:500;font-size:.95rem;line-height:1.3}
+.qo:hover:not(:disabled){border-color:var(--pc);background:var(--surface-2)}
+.qo:disabled{cursor:default;color:var(--ink)}
+.qo.ok{border-color:var(--ok);background:var(--ok-bg)}
+.qo.bad{border-color:var(--alert);background:var(--alert-bg)}
+.qo.key{border:2px dashed var(--ok)}
+.qo.ok::after{content:" \2713";font-weight:700;color:var(--ok)}
+.qo.bad::after{content:" \2715";font-weight:700;color:var(--alert)}
+.fb{margin-top:.55rem;padding:.55rem .8rem;border-radius:8px;background:var(--code);font-size:.88rem;line-height:1.45}
+.fb .res{font-weight:700;margin-bottom:.15rem}
+.fb .res.ok{color:var(--ok)} .fb .res.bad{color:var(--alert)}
+.minis{display:grid;gap:.8rem;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));align-items:start}
+@media (max-width:900px){.minis{grid-template-columns:minmax(0,1fr)}}
+.mini{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:10px;padding:.7rem .9rem}
+.mini h3{margin:.3rem 0 .35rem;font-size:1.25rem}
+.mini .ev{font-size:1.12rem}
+.mini .ask{font-weight:700;font-size:.92rem;margin-top:.5rem}
+
+/* laboratorios */
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem 1.15rem}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+@media (max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
+label.l{display:block;font-family:var(--f-body);font-size:.88rem;font-weight:600;color:var(--ink-2);margin-bottom:.3rem}
+textarea,input[type="text"]{width:100%;font-family:var(--f-mono);font-size:.88rem;color:var(--ink);background:var(--code);border:1px solid var(--line);border-radius:6px;padding:.55rem .7rem}
+textarea{min-height:4.6rem;resize:none;line-height:1.5}
+.hx{font-family:var(--f-mono);font-size:.78rem;margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.2rem .6rem;background:var(--code);border-radius:6px;padding:.5rem .65rem;min-height:3.6em}
+.hx .g{white-space:nowrap}
+.hx mark{background:var(--warn-bg);color:var(--warn);font-weight:700;border-radius:2px;padding:0 1px}
+.verdict{margin-top:.7rem;padding:.5rem .8rem;border-radius:6px;font-weight:700;font-size:.92rem}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)}
+.verdict.bad{background:var(--alert-bg);color:var(--alert)}
+.stat{font-size:.88rem;margin-top:.4rem;color:var(--ink-2)}
+.insight{margin-top:.5rem;font-size:.95rem;color:var(--ink-2);max-width:62rem}
+.meter{height:.7rem;background:var(--code);border-radius:99px;overflow:hidden;margin-top:.8rem}
+.meter>i{display:block;height:100%;width:0;background:var(--alert);transition:width .3s}
+.meter[data-lv="mid"]>i{background:var(--warn)}
+.meter[data-lv="ok"]>i{background:var(--ok)}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.6rem}
+.chip{font-family:var(--f-mono);font-size:.76rem;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:.4rem .65rem;min-height:36px}
+.chip:hover{border-color:var(--accent)}
+.bigtime{font-family:var(--f-display);font-weight:800;font-size:2.1rem;line-height:1.1;letter-spacing:-.02em;margin-top:.2rem}
+.warnbox{margin-top:.6rem;padding:.5rem .8rem;border-radius:6px;background:var(--warn-bg);color:var(--warn);font-size:.85rem}
+
+/* diagrama de disponibilidad */
+.av{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.8rem}
+.av svg{width:100%;height:auto;max-height:15rem;display:block}
+.av .nd{fill:var(--ok-bg);stroke:var(--ok);stroke-width:1.5;cursor:pointer}
+.av .nd.down{fill:var(--alert-bg);stroke:var(--alert)}
+.av .lb{fill:var(--surface-2);stroke:var(--pc);stroke-width:1.5}
+.av .ln{stroke:var(--ok);stroke-width:1.5;stroke-dasharray:4 3}
+.av .ln.down{stroke:var(--alert);opacity:.35}
+.av text{font:600 11px var(--f-mono);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.av .st{font:500 10px var(--f-mono);fill:var(--ink-2)}
+.av g[role="button"]:focus-visible .nd{stroke:var(--accent);stroke-width:3}
+.av .seg{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:.6rem}
+.av-s{margin-top:.5rem;font-weight:700;font-size:.92rem;padding:.45rem .7rem;border-radius:6px}
+.av-s.ok{background:var(--ok-bg);color:var(--ok)}
+.av-s.mid{background:var(--warn-bg);color:var(--warn)}
+.av-s.bad{background:var(--alert-bg);color:var(--alert)}
+
+/* respuesta */
+.ord{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.ord li{display:grid;grid-template-columns:1.6rem minmax(0,1fr) auto;gap:.6rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.15rem .4rem .15rem .7rem}
+.ord li.sel{border-color:var(--accent)}
+.ord li.ok{border-color:var(--ok);background:var(--ok-bg)}
+.ord li.bad{border-color:var(--alert);background:var(--alert-bg)}
+.ord .n{font-family:var(--f-mono);font-weight:700;color:var(--ink-2)}
+.ord .t{background:transparent;border:0;text-align:left;padding:.2rem 0;font-size:.92rem;line-height:1.3;min-height:44px}
+.ord .mv{display:flex;gap:.3rem}
+.ord .mv button{width:44px;height:44px;border:1px solid var(--line);background:var(--code);border-radius:6px;font-size:1.05rem}
+.ord .mv button:disabled{opacity:.3;cursor:default}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;min-height:12rem}
+.panel h3{margin-bottom:.4rem}
+.panel p{font-size:.92rem;color:var(--ink-2)}
+.panel p+p{margin-top:.5rem}
+.panel .score{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--accent)}
+.acts{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
+
+/* quiz */
+.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.2rem;max-width:56rem}
+.qn{font-size:.92rem;font-weight:700;color:var(--accent);margin-bottom:.4rem}
+.q h3{font-size:1.3rem;line-height:1.25}
+.score-big{font-family:var(--f-display);font-weight:800;font-size:3.6rem;line-height:1;color:var(--accent)}
+
+/* extras */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hud{display:inline-flex;align-items:center;gap:.3rem;margin-left:.9rem;vertical-align:middle}
+.hud span{font-size:.78rem;color:var(--ink-2);margin-right:.2rem}
+.hud i{display:inline-block;width:.7rem;height:.7rem;border-radius:2px;border:1.5px solid var(--ink-2)}
+.hud i.ok{background:var(--ok);border-color:var(--ok)}
+.hud i.bad{background:var(--alert);border-color:var(--alert)}
+#rec{position:relative}
+#rec::after{content:"";position:absolute;left:0;right:0;top:0;height:3rem;background:linear-gradient(180deg,transparent,rgba(165,240,28,.10),transparent);animation:scan 4.5s linear infinite;pointer-events:none}
+@keyframes scan{from{transform:translateY(-3rem)}to{transform:translateY(24rem)}}
+.cd-l{margin-top:.7rem;font-family:var(--f-body);font-size:.88rem;font-weight:600;color:var(--ink-2)}
+.cd{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;letter-spacing:.02em;color:var(--alert);font-variant-numeric:tabular-nums}
+.cks{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;list-style:none}
+.ck{font-size:.85rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.25rem .7rem;color:var(--ink-2);background:var(--code)}
+.ck::before{content:"\25CB  "}
+.ck.ok{border-color:var(--ok);color:var(--ok)}
+.ck.ok::before{content:"\2713  "}
+.acc{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.3rem;align-items:start}
+@media (max-width:820px){.acc{grid-template-columns:minmax(0,1fr)}}
+.lbl{font-size:.88rem;font-weight:700;color:var(--ink-2);margin:0 0 .4rem}
+.roles{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.9rem}
+.role,.sw{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.45rem .8rem;min-height:44px;font-weight:600;font-size:.98rem}
+.role:hover,.sw:hover:not(:disabled){border-color:var(--pc)}
+.role[aria-checked="true"]{border-color:var(--pc);background:var(--surface-2);box-shadow:inset 3px 0 0 var(--pc)}
+.sw{margin-bottom:.4rem}
+.sw:disabled{opacity:.45;cursor:default}
+.sw i{position:relative;width:2.5rem;height:1.35rem;border-radius:99px;background:var(--code);border:1px solid var(--line);flex:none}
+.sw i::after{content:"";position:absolute;left:2px;top:2px;width:calc(1.35rem - 6px);height:calc(1.35rem - 6px);border-radius:50%;background:var(--ink-2);transition:transform .2s}
+.sw[aria-checked="true"] i{background:var(--pc);border-color:var(--pc)}
+.sw[aria-checked="true"] i::after{transform:translateX(1.15rem);background:var(--on-accent)}
+.deny{color:var(--alert);font-weight:600;font-size:.88rem}
+.brief{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+@media (max-width:760px){.brief{grid-template-columns:minmax(0,1fr)}}
+.bf{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;padding:.8rem 1rem}
+.bf .n{font-family:var(--f-display);font-weight:800;color:var(--accent);margin-right:.4rem}
+.bf h3{font-size:1.1rem}
+.bf p{font-size:.95rem;color:var(--ink-2);margin-top:.3rem;line-height:1.45}
+
+/* cierre */
+.layers{display:grid;grid-template-columns:minmax(0,17rem) minmax(0,1fr);gap:1.6rem;align-items:center}
+@media (max-width:760px){.layers{grid-template-columns:minmax(0,1fr)}}
+.layers svg{width:100%;max-width:17rem;height:auto;display:block;margin-inline:auto}
+.ly{fill:var(--surface);stroke:var(--ink-2);stroke-width:1}
+.ly.alt{fill:var(--surface-2)}
+.ly.core{fill:var(--accent);stroke:var(--ink)}
+.lt{font:500 10.5px var(--f-mono);fill:var(--ink);text-anchor:middle}
+.lt.core{fill:var(--on-accent);font-weight:700;font-size:12px}
+.concl{margin-top:.6rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.92rem}
+.foot{font-size:.76rem;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:.2rem 1rem}
+
+/* G5 gobierno de datos: componentes nuevos */
+.slide[data-g="kpi"],.slide[data-g="cas"]{--pc:var(--pc-c)}
+.slide[data-g="cal"],.slide[data-g="rev"]{--pc:var(--pc-i)}
+.slide[data-g="mon"]{--pc:var(--pc-d)}
+.slide[data-g="tec"]{--pc:var(--pc-e)}
+.slide[data-g="inc"]{--pc:var(--pc-n)}
+.slide[data-g="est"]{--pc:var(--pc-p)}
+.hud b{font-size:.82rem;font-weight:700;color:var(--ink)}
+.pil .big.w{font-size:2.5rem;line-height:1}
+.acc2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:1rem;align-items:start}
+@media (max-width:820px){.acc2{grid-template-columns:minmax(0,1fr)}}
+.seg.box{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+input[type="range"]{width:100%;accent-color:var(--accent);min-height:36px;margin:0}
+
+/* tablero del inicio */
+.score{display:flex;align-items:baseline;gap:.7rem;padding:.6rem .85rem .1rem}
+.sc-n{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums;min-width:2.2ch}
+.sc-l{font-size:.85rem;color:var(--ink-2);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;padding:.4rem .85rem .7rem}
+.tile{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:.45rem .65rem}
+.tile .tl{display:block;font-size:.78rem;color:var(--ink-2);font-weight:600}
+.tile .tv{display:block;font-family:var(--f-display);font-weight:750;font-size:1.3rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.tm{display:block;height:.35rem;border-radius:9px;background:var(--line);margin-top:.3rem;overflow:hidden}
+.tm u{display:block;height:100%;width:0;background:var(--alert);transition:width .6s ease;text-decoration:none}
+.tile[data-lv="mid"] .tm u{background:var(--warn)}
+.tile[data-lv="ok"] .tm u{background:var(--ok)}
+.rec-c{min-height:3.6em}
+
+/* selector de indicadores */
+.picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+.pk{display:flex;gap:.55rem;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.5rem .7rem;min-height:44px;font-weight:600;font-size:.92rem;line-height:1.3}
+.pk::before{content:"";flex:none;width:1.05rem;height:1.05rem;border:2px solid var(--ink-2);border-radius:4px;margin-top:.1rem}
+.pk:hover:not(:disabled){border-color:var(--pc)}
+.pk[aria-pressed="true"]{border-color:var(--pc);background:var(--surface-2)}
+.pk[aria-pressed="true"]::before{background:var(--pc);border-color:var(--pc);box-shadow:inset 0 0 0 2px var(--surface-2)}
+.pk.ok{border-color:var(--ok);background:var(--ok-bg)}
+.pk.bad{border-color:var(--alert);background:var(--alert-bg)}
+.pk:disabled{cursor:default;color:var(--ink)}
+
+/* tablas de marcar */
+.ft td,.ft th{padding:.36rem .6rem;font-size:.88rem;white-space:nowrap}
+.ft td:first-child{font-weight:500}
+.ft tbody tr{cursor:pointer}
+.ft tr.ok{background:var(--ok-bg)}
+.ft tr.bad{background:var(--alert-bg)}
+.ft tr.gone td{opacity:.35;text-decoration:line-through}
+.ft .hl{color:var(--warn);font-weight:700}
+.fg{width:1.9rem;height:1.9rem;border:2px solid var(--ink-2);border-radius:6px;background:transparent;font-size:.85rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.fg[aria-pressed="true"]{background:var(--pc);border-color:var(--pc);color:var(--on-accent);font-weight:800}
+.panel .lst{margin:.4rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.2rem;font-size:.88rem;color:var(--ink-2)}
+.panel .lst b{color:var(--ink)}
+.panel .score{font-size:2.2rem}
+.panel .row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+.dm{display:inline-block;font-size:.75rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:.05rem .5rem;color:var(--pc);background:var(--code)}
+
+/* prueba de estrés */
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font:600 11px var(--f-body);fill:var(--ink-2)}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart .sla{stroke:var(--warn);stroke-width:1.5;stroke-dasharray:5 4}
+.chart .c1{fill:none;stroke:var(--alert);stroke-width:2.5}
+.chart .c2{fill:none;stroke:var(--pc-i);stroke-width:2.5}
+.chart .dim{opacity:.25}
+.chart .lg{fill:var(--ink)}
+.rd-v{font-family:var(--f-display);font-weight:800;font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums}
+
+/* matriz de riesgos */
+.rkh{display:grid;grid-template-columns:minmax(0,1fr) 5.6rem 5.6rem 2.6rem;gap:.5rem;padding:0 .7rem .3rem;font-size:.78rem;font-weight:700;color:var(--ink-2)}
+.rk{display:grid;grid-template-columns:minmax(0,1fr) 5.6rem 5.6rem 2.6rem;gap:.5rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.3rem .7rem}
+.rk b{font-size:.92rem;line-height:1.25;font-weight:600}
+.lv{min-height:36px;border:1px solid var(--line);border-radius:6px;background:var(--code);font-weight:700;font-size:.85rem}
+.lv[data-v="1"]{color:var(--ok)}
+.lv[data-v="2"]{color:var(--warn)}
+.lv[data-v="3"]{color:var(--alert)}
+.sco{text-align:center;font-family:var(--f-display);font-weight:800;font-size:1.3rem}
+.rank{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin-top:.4rem}
+.rank li{display:grid;grid-template-columns:1.4rem minmax(0,1fr) auto;gap:.5rem;font-size:.88rem;align-items:baseline}
+.rank li span:first-child{font-weight:800;color:var(--pc)}
+.rank li i{font-style:normal;color:var(--ink-2);font-size:.8rem}
+
+/* radar y estrategias */
+.radar svg{width:100%;max-width:21rem;height:auto;display:block;margin:0 auto}
+.radar .rg{fill:none;stroke:var(--line);stroke-width:1}
+.radar .ax{stroke:var(--line)}
+.radar .pb{fill:none;stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:4 3}
+.radar .pn{fill:rgba(79,227,193,.22);stroke:var(--pc-p);stroke-width:2.5}
+.radar text{font:600 11px var(--f-body);fill:var(--ink)}
+.radar .vl{fill:var(--pc-p);font-weight:800}
+.strat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
+.sg{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.3rem .6rem;min-height:40px;text-align:left;font-weight:600;font-size:.86rem;line-height:1.25}
+.sg:hover:not(:disabled){border-color:var(--pc)}
+.sg:disabled{opacity:.45;cursor:default}
+.sg.used{opacity:1;border-color:var(--pc);background:var(--surface-2)}
+.sg.used::after{content:" \00B7 ciclo " attr(data-c);color:var(--pc);font-weight:700}
+
+/* benchmarking */
+.bn{display:flex;flex-direction:column;gap:.55rem;margin-top:.2rem}
+.bn h4{margin:0;font-size:.9rem;font-weight:700}
+.bb{display:grid;grid-template-columns:4.6rem minmax(0,1fr) 2.2rem;gap:.5rem;align-items:center;font-size:.78rem;color:var(--ink-2)}
+.bb u{display:block;height:.5rem;border-radius:3px;background:var(--ink-2);text-decoration:none}
+.bb.me u{background:var(--alert)}
+.bb.ld u{background:var(--ok)}
+.bb b{color:var(--ink);text-align:right}
+
+/* cierre: ciclo */
+.cyc svg{width:100%;max-width:17rem;height:auto;display:block;margin:0 auto}
+.cyc .arc{fill:none;stroke-width:16}
+.cyc text{font:700 12px var(--f-body);fill:var(--ink);text-anchor:middle}
+.cyc .ct{font:800 14px var(--f-display);fill:var(--accent)}
+.concl2{margin-top:.4rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.3rem;font-size:.9rem}
+
+.mini .tag{display:none}
+.mini{padding:.6rem .8rem}
+.mini h3{font-size:1.15rem;margin:0 0 .3rem}
+.mini .ev{font-size:1.02rem;line-height:1.38}
+.mini .ask{font-size:.88rem;margin-top:.4rem}
+.mini .qopts{gap:.3rem;margin-top:.45rem}
+.mini .qo{font-size:.88rem;padding:.3rem .65rem;min-height:40px;line-height:1.25}
+.mini .fb{font-size:.82rem;margin-top:.4rem;padding:.45rem .65rem}
+.sg{min-height:36px;padding:.25rem .55rem;font-size:.84rem}
+#rdOut .stat{font-size:.8rem;line-height:1.35}
+.panel .rd-v{font-size:2rem;color:var(--ink);margin-top:.5rem}
+.radar svg{max-width:24rem}
+body{grid-template-columns:minmax(0,1fr)}
+.top-in{min-width:0}
+
+.pk .pt{flex:1}
+.pk .bd,.dk{font-size:.72rem;font-weight:700;border-radius:999px;padding:.05rem .55rem;border:1px solid var(--bc);color:var(--bc);background:var(--code);white-space:nowrap;align-self:center}
+.dk{font-size:.82rem;padding:.2rem .7rem;color:var(--ink-2);list-style:none}
+.dk.on{background:var(--bc);color:var(--on-accent)}
+.pk[aria-pressed="true"]{border-color:var(--pc)}
+.pk[aria-pressed="true"]::before{background:var(--pc);border-color:var(--pc)}
+.sg b{display:block;font-weight:650}
+.sg small{display:block;color:var(--ink-2);font-size:.74rem;font-weight:500}
+.sg .cn{font-style:normal;color:var(--pc);font-weight:700;font-size:.74rem}
+.sg.used::after{content:none}
+.radar text.wk,.radar .vl.wk{fill:var(--alert)}
+.rkh,.rk{grid-template-columns:1.6rem minmax(0,1fr) 5.2rem 5.2rem 2.6rem}
+.rk .rn{width:1.5rem;height:1.5rem;border-radius:50%;background:var(--pc);color:var(--on-accent);font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.rk .pista{display:block;font-size:.78rem;color:var(--ink-2);margin-top:.1rem}
+.sco[data-l="1"]{color:var(--ok)}.sco[data-l="2"]{color:var(--warn)}.sco[data-l="3"]{color:var(--alert)}
+.hm{display:grid;grid-template-columns:4.6rem repeat(3,minmax(0,1fr));gap:.25rem;margin:.4rem 0}
+.hm .ax{font-size:.72rem;color:var(--ink-2);font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center}
+.hm .rl{justify-content:flex-start}
+.hc{min-height:2.6rem;border-radius:6px;display:flex;flex-wrap:wrap;gap:.2rem;align-items:center;justify-content:center;padding:.2rem}
+.hc[data-l="1"]{background:var(--ok-bg)}.hc[data-l="2"]{background:var(--warn-bg)}.hc[data-l="3"]{background:var(--alert-bg)}
+.hc i{font-style:normal;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--pc);color:var(--on-accent);font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+.sg{min-height:34px;padding:.2rem .55rem}
+#rdOut .verdict{font-size:.82rem;padding:.35rem .6rem}
+#rdOut{padding:.5rem .8rem!important;margin-top:.4rem!important}
+#rdOut .stat{font-size:.78rem;margin:0 0 .15rem!important;line-height:1.3}
+
+.k.nn::before{content:none}
+.bn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem .9rem}
+
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#paso-1" data-go="0"><i></i>Caso La Ceiba</a>
+    <nav class="nav" id="nav" aria-label="Secciones del recurso"></nav>
+  </div>
+  <div class="prog" role="progressbar" aria-label="Avance" aria-valuemin="0" aria-valuemax="100" id="progWrap"><i id="prog"></i></div>
+</header>
+
+<main class="stage" id="stage">
+
+<!-- 1 INICIO -->
+<section class="slide" data-g="inicio" data-st="Inicio" tabindex="-1"><div class="in">
+  <div class="hero">
+    <div class="hero-l">
+      <p class="eyebrow" style="--pc:var(--accent)">Fundamentos de Inteligencia de Negocios y Gobierno de Datos · CUN</p>
+      <h1>Evaluar y mejorar el gobierno de datos</h1>
+      <p class="lede">Hace 12 meses, Supermercados La Ceiba lanzó su programa de gobierno de datos. Hoy la junta pregunta si <em>funciona</em>, y nadie tiene un número para responder.</p>
+      <div class="pp">
+        <p class="eyebrow" style="--pc:var(--accent)">Pregunta problema</p>
+        <p class="pp-q">¿Cómo evaluar el rendimiento del gobierno de datos y mejorarlo de forma continua, para que siga siendo eficiente, seguro y alineado con los objetivos de la organización?</p>
+      </div>
+      <p class="cta"><button class="btn pri" type="button" data-next>Abrir el caso →</button><span class="note">Caso ficticio con fines didácticos</span></p>
+    </div>
+    <figure class="rec" id="rec" data-s="0">
+      <figcaption class="rec-h"><span>Tablero de salud · Gobierno de datos</span><span class="rec-st" id="recSt">Sin medir</span></figcaption>
+      <div class="seg" role="group" aria-label="Estado del tablero">
+        <button type="button" data-s="0" aria-pressed="true">Sin medir</button>
+        <button type="button" data-s="1" aria-pressed="false">Mes 12</button>
+        <button type="button" data-s="2" aria-pressed="false">Meta año 2</button>
+      </div>
+      <div class="score"><span class="sc-n" id="scN">?</span><span class="sc-l">Índice de salud, de 0 a 100</span></div>
+      <div class="tiles" id="tiles"></div>
+      <p class="rec-c" id="recCap" aria-live="polite"></p>
+    </figure>
+  </div>
+</div></section>
+
+<!-- 2 CASO: línea de tiempo -->
+<section class="slide" data-g="caso" data-st="Línea de tiempo" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">El caso · Supermercados La Ceiba · 38 tiendas · 1,2 millones de clientes en el Club Ceiba</p>
+    <h2>Doce meses de gobierno de datos</h2>
+  </header>
+  <div class="tl-rail" id="tlRail" role="group" aria-label="Momentos del caso"></div>
+  <div class="tl-panel" id="tlPanel" aria-live="polite"></div>
+  <div class="tl-ctl">
+    <button class="btn ghost" type="button" id="tlPrev">← Antes</button>
+    <p class="note" id="tlHint">Avanza momento a momento. Al final, pasa al siguiente paso.</p>
+    <button class="btn pri" type="button" id="tlNext">Después →</button>
+  </div>
+</div></section>
+
+<!-- 3 CASO: la junta -->
+<section class="slide" data-g="caso" data-st="La junta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">El caso · Mes 12</p>
+    <h2>Lo que pide la junta</h2>
+    <p class="sub">Esta carta llegó a tu escritorio. Pulsa las tachaduras para leerlas.</p>
+  </header>
+  <div class="split2">
+    <blockquote class="ransom">
+      <span class="eyebrow" style="--pc:var(--accent)">Carta de la junta directiva</span>
+      <p>Llevamos un año y USD 1,2 millones. Tenemos comité, políticas y reuniones, pero no un <button class="redact" type="button" aria-pressed="false" aria-label="Dato tachado, pulsa para mostrar">resultado medible</button>. Queremos un <button class="redact" type="button" aria-pressed="false" aria-label="Dato tachado, pulsa para mostrar">número</button> y un plan para el segundo año.</p>
+      <p class="cd-l">Plazo para presentar el plan de mejora</p>
+      <p class="cd" id="cd" style="color:var(--accent)">90 días</p>
+    </blockquote>
+    <div class="qs">
+      <div class="q4"><span class="n">1</span><div><b>¿Funciona el gobierno de datos?</b><span>Lo resuelves con KPIs y calidad de datos.</span></div></div>
+      <div class="q4"><span class="n">2</span><div><b>¿Cómo lo evaluamos de forma continua?</b><span>Lo resuelves con monitoreo, automatización y otras técnicas.</span></div></div>
+      <div class="q4"><span class="n">3</span><div><b>¿Qué mejoramos primero y cómo?</b><span>Lo resuelves con incidentes y estrategias de mejora.</span></div></div>
+      <div class="q4"><span class="n">4</span><div><b>¿Qué hicieron otros y qué mantenemos vivo?</b><span>Lo resuelves con casos de estudio y revisión de conceptos.</span></div></div>
+    </div>
+  </div>
+  <p class="nx" style="--pc:var(--accent)">En equipo, 2 minutos: <b>¿qué evidencia tendría que ver la junta para creer que el programa funciona?</b></p>
+</div></section>
+
+<!-- 4 MARCO -->
+<section class="slide" data-g="mapa" data-st="Marco" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">Marco · Introducción de la unidad</p>
+    <h2>Medir, responder, mejorar</h2>
+    <p class="sub">Un gobierno de datos implementado no está terminado: su éxito no se da por sentado. Requiere una evaluación continua para asegurar que funcione correctamente y cumpla los objetivos de la organización. Los siete conceptos clave de la guía se reparten en tres movimientos.</p>
+  </header>
+  <div class="tri">
+    <article class="pil" style="--pc:var(--pc-c)"><span class="big w">Medir</span><h3>¿Cómo está el sistema?</h3><p>Indicadores, calidad de datos y evaluaciones que se automatizan.</p><div class="tags"><span class="tag">1 KPIs</span><span class="tag">2 Calidad de datos</span><span class="tag">3 Automatización</span></div></article>
+    <article class="pil" style="--pc:var(--pc-n)"><span class="big w">Responder</span><h3>¿Qué pasa cuando algo falla?</h3><p>Detectar, contener, resolver y prevenir, minimizando el impacto.</p><div class="tags"><span class="tag">4 Gestión de incidentes</span></div></article>
+    <article class="pil" style="--pc:var(--pc-p)"><span class="big w">Mejorar</span><h3>¿Cómo se vuelve mejor?</h3><p>Convertir lo medido en acciones, personas capacitadas y procesos más eficientes.</p><div class="tags"><span class="tag">5 Mejora continua</span><span class="tag">6 Capacitación</span><span class="tag">7 Optimización</span></div></article>
+  </div>
+  <p class="callout" style="--pc:var(--accent)"><b>Sin medir no se puede mejorar.</b> Evaluar el rendimiento es un proceso continuo y multidimensional: mejora la eficiencia operativa y la toma de decisiones, minimiza riesgos y asegura el cumplimiento de las normas. Vas a recorrerlos con el caso de La Ceiba.</p>
+</div></section>
+
+<!-- 5 KPI reconoce -->
+<section class="slide" data-g="kpi" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">KPIs · Reconoce</p>
+    <h2>¿Cómo se mide un gobierno de datos?</h2>
+  </header>
+  <p class="def">Los indicadores clave de rendimiento (KPIs) son métricas específicas que evalúan el éxito del gobierno de datos: la precisión, el tiempo de respuesta, la disponibilidad y la seguridad de la información.</p>
+  <div class="cards n4">
+    <article class="k"><b>Tiempo de respuesta de consultas</b><p>Cuánto tarda el sistema en entregar información cuando alguien la solicita.</p></article>
+    <article class="k"><b>Tasa de errores en los datos</b><p>La cantidad de errores o inconsistencias detectadas en los conjuntos de datos a lo largo del tiempo.</p></article>
+    <article class="k"><b>Disponibilidad y precisión</b><p>Que los datos estén accesibles cuando se necesitan y que sean correctos.</p></article>
+    <article class="k"><b>Velocidad de procesamiento y satisfacción</b><p>Qué tan rápido se procesa la información y qué opinan quienes usan el sistema.</p></article>
+  </div>
+  <p class="callout">Medir de forma regular permite detectar áreas de mejora y tomar decisiones informadas. Y los KPIs no son fijos: se ajustan a medida que cambian las prioridades de la organización.</p>
+  <p class="nx">Siguiente: armas el tablero de la junta y aplicas los KPIs a los síntomas del caso.</p>
+</div></section>
+
+<!-- 6 KPI lab -->
+<section class="slide" data-g="kpi" data-st="Experimenta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">KPIs · Experimenta</p>
+    <h2>Arma el tablero de la junta</h2>
+    <p class="sub">Elige hasta 6 indicadores. Algunos miden resultados y otros solo actividad.</p>
+  </header>
+  <div class="acc2">
+    <div><div class="picks" id="picks"></div></div>
+    <div class="panel" id="pickOut" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<!-- 7 KPI aplica -->
+<section class="slide" data-g="kpi" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">KPIs · Aplica</p><h2>¿Qué KPI mide cada síntoma?</h2></header>
+  <div class="minis" data-items="K1,K2,K3"></div>
+</div></section>
+
+<!-- 8 CAL reconoce -->
+<section class="slide" data-g="cal" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Calidad de datos · Reconoce</p>
+    <h2>¿Qué hace que un dato sea bueno?</h2>
+  </header>
+  <p class="def">La calidad de los datos es un factor crítico que afecta directamente el rendimiento del gobierno de datos: los datos de baja calidad llevan a decisiones empresariales incorrectas.</p>
+  <div class="cards n4">
+    <article class="k"><b>Precisos</b><p>Reflejan la realidad, sin errores de captura.</p><p class="eg">Un correo con # en lugar de @.</p></article>
+    <article class="k"><b>Completos</b><p>No faltan los campos que la decisión necesita.</p><p class="eg">Un cliente sin correo ni ciudad.</p></article>
+    <article class="k"><b>Consistentes</b><p>La misma información en todos los sistemas, sin duplicados.</p><p class="eg">La misma clienta registrada dos veces.</p></article>
+    <article class="k"><b>Actualizados</b><p>Vigentes: los datos pueden volverse obsoletos con el tiempo.</p><p class="eg">Una dirección de hace 5 años.</p></article>
+  </div>
+  <div class="split2">
+    <p class="callout"><b>Cómo se evalúa.</b> Con procesos de validación y verificación que aseguren que la información sea confiable y adecuada para decidir.</p>
+    <p class="callout"><b>Cómo se mejora.</b> Con controles que detectan y corrigen errores de forma proactiva, y con herramientas que automatizan la limpieza y la detección de duplicados.</p>
+  </div>
+</div></section>
+
+<!-- 9 CAL lab -->
+<section class="slide" data-g="cal" data-st="Experimenta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Calidad de datos · Experimenta</p>
+    <h2>Encuentra los errores del Club Ceiba</h2>
+    <p class="sub">Esta es una muestra de 10 registros. Toca los que creas con error y pulsa Revisar.</p>
+  </header>
+  <div class="acc2">
+    <div class="tw ft"><table><thead><tr><th><span class="sr">Marcar</span></th><th>ID</th><th>Nombre</th><th>Correo</th><th>Ciudad</th><th>Actualizado</th></tr></thead><tbody id="cqBody"></tbody></table></div>
+    <div class="panel" id="cqOut" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<!-- 10 CAL aplica -->
+<section class="slide" data-g="cal" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Calidad de datos · Aplica</p><h2>¿Qué dimensión falla?</h2></header>
+  <div class="minis" data-items="Q1,Q2,Q3"></div>
+</div></section>
+
+<!-- 11 MON reconoce -->
+<section class="slide" data-g="mon" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Monitoreo y automatización · Reconoce</p>
+    <h2>Vigilar sin depender de una persona</h2>
+  </header>
+  <div class="split2">
+    <article class="k nn"><b>Monitoreo y auditoría de datos</b><p>Seguimiento continuo de las actividades sobre los datos: quién accede a la información, cuándo se realizan modificaciones y cómo se están utilizando.</p><p class="eg">El monitoreo proactivo detecta accesos no autorizados o anomalías antes de que causen mayores inconvenientes.</p></article>
+    <article class="k nn"><b>Automatización de las evaluaciones</b><p>Herramientas que recopilan y analizan datos de forma constante, sin intervención manual, y generan informes regulares sobre el estado del sistema.</p><p class="eg">No solo ahorra tiempo y recursos: detecta problemas antes de que impacten la operación.</p></article>
+  </div>
+  <div class="cards n3">
+    <article class="k"><b>Quién</b><p>Qué usuario o proceso toca los datos, y si su rol lo justifica.</p></article>
+    <article class="k"><b>Cuándo</b><p>En qué momento, y si encaja con el patrón normal de trabajo.</p></article>
+    <article class="k"><b>Cómo</b><p>Desde dónde y con qué volumen: un acceso puede ser válido y aun así sospechoso.</p></article>
+  </div>
+  <p class="callout"><b>El equipo de datos se enfoca en actuar.</b> La automatización agiliza la detección y la generación de informes, y libera tiempo para tomar acciones correctivas en lugar de tareas operativas.</p>
+</div></section>
+
+<!-- 12 MON lab -->
+<section class="slide" data-g="mon" data-st="Experimenta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Monitoreo y automatización · Experimenta</p>
+    <h2>Audita la bitácora de accesos</h2>
+    <p class="sub">Una de estas líneas explica el mes 9. Marca las que te parezcan anómalas, mirando quién, cuándo y cómo.</p>
+  </header>
+  <div class="acc2">
+    <div class="tw ft"><table><thead><tr><th><span class="sr">Marcar</span></th><th>Cuándo</th><th>Quién</th><th>Qué hace</th><th>Desde</th></tr></thead><tbody id="auBody"></tbody></table></div>
+    <div class="panel" id="auOut" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<!-- 13 MON aplica -->
+<section class="slide" data-g="mon" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Monitoreo y automatización · Aplica</p><h2>¿Qué conviene automatizar?</h2></header>
+  <div class="minis" data-items="A1,A2,A3"></div>
+</div></section>
+
+<!-- 14 TEC reconoce -->
+<section class="slide" data-g="tec" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Más técnicas · Reconoce</p>
+    <h2>Cinco técnicas para completar la evaluación</h2>
+    <p class="sub">Además de KPIs, calidad de datos, monitoreo y automatización, la guía propone cinco técnicas más.</p>
+  </header>
+  <div class="tw"><table>
+    <thead><tr><th>Técnica</th><th>Para qué sirve</th><th>En La Ceiba</th></tr></thead>
+    <tbody>
+      <tr><td>Encuestas y auditorías internas</td><td>Retroalimentación de usuarios sobre facilidad de uso y accesibilidad. Auditorías por TI o consultores para verificar estándares internos y normas.</td><td>¿El catálogo de datos es fácil de usar? ¿Se cumplen las 14 políticas?</td></tr>
+      <tr><td>Evaluación comparativa (benchmarking)</td><td>Comparar el rendimiento con otras empresas del sector y aprender de los líderes.</td><td>¿Estamos por debajo del estándar de la industria?</td></tr>
+      <tr><td>Análisis de riesgos</td><td>Identificar y evaluar riesgos (violación de seguridad, pérdida de datos, errores) para tomar medidas preventivas.</td><td>¿Qué falla es más probable y más dañina?</td></tr>
+      <tr><td>Evaluación de la escalabilidad</td><td>Verificar que el rendimiento se mantenga al crecer el volumen, con pruebas de estrés y simulaciones de crecimiento.</td><td>¿Aguanta el sistema el doble de clientes y la temporada de diciembre?</td></tr>
+      <tr><td>Evaluaciones de cumplimiento normativo</td><td>Revisar de forma periódica que se cumplen las regulaciones locales e internacionales.</td><td>Ley 1581 de 2012 y, si hay clientes en Europa, GDPR.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="nx">Siguiente: eliges la técnica para cada situación y experimentas con tres de ellas.</p>
+</div></section>
+
+<!-- 15 TEC aplica -->
+<section class="slide" data-g="tec" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Más técnicas · Aplica</p><h2>¿Qué técnica usas?</h2></header>
+  <div class="minis" data-items="T1,T2,T3"></div>
+</div></section>
+
+<!-- 16 TEC benchmarking -->
+<section class="slide" data-g="tec" data-st="Benchmarking" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Más técnicas · Benchmarking</p><h2>La Ceiba frente al sector</h2></header>
+  <div class="ap" data-items="B1"></div>
+</div></section>
+
+<!-- 17 TEC estrés -->
+<section class="slide" data-g="tec" data-st="Prueba de estrés" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Más técnicas · Escalabilidad</p>
+    <h2>Prueba de estrés: duplica los datos</h2>
+    <p class="sub">El Club Ceiba crece. Mueve el volumen o corre la prueba y mira dónde se rompe cada arquitectura. El umbral aceptable es de 5 segundos.</p>
+  </header>
+  <div class="acc2">
+    <div class="lab chart"><svg id="stSvg" viewBox="0 0 360 200" role="img" aria-label="Tiempo de respuesta según el volumen de datos para un servidor propio y para la nube elástica"></svg></div>
+    <div class="panel">
+      <div class="seg s2 box" role="group" aria-label="Arquitectura"><button type="button" data-a="on" aria-pressed="true">Servidor propio</button><button type="button" data-a="cl" aria-pressed="false">Nube elástica</button></div>
+      <label class="l" for="stRange" style="margin-top:.7rem">Volumen de datos</label>
+      <input id="stRange" type="range" min="1" max="10" step="0.1" value="1">
+      <p class="rd-v" id="stT">1,4 s</p>
+      <p class="stat" id="stV"></p>
+      <p class="av-s ok" id="stS"></p>
+      <div class="acts"><button class="btn pri" type="button" id="stRun">Correr prueba de estrés</button></div>
+      <p class="insight" id="stI"></p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 18 TEC riesgos -->
+<section class="slide" data-g="tec" data-st="Riesgos" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Más técnicas · Análisis de riesgos</p>
+    <h2>¿Qué atacas primero?</h2>
+    <p class="sub">Prioridad = probabilidad por impacto. Lee la pista de cada riesgo, toca los botones para calificarlo y mira dónde cae en el mapa de calor.</p>
+  </header>
+  <div class="acc2">
+    <div><div class="rkh"><span></span><span>Riesgo</span><span>Probabilidad</span><span>Impacto</span><span>Nivel</span></div><div class="qs" id="rkRows"></div></div>
+    <div class="panel" id="rkOut" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<!-- 19 TEC cumplimiento -->
+<section class="slide" data-g="tec" data-st="Cumplimiento" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Más técnicas · Cumplimiento normativo</p><h2>Evaluar el cumplimiento, una y otra vez</h2></header>
+  <p class="def" style="font-size:1.2rem">Verificar de forma periódica que el sistema cumple las regulaciones locales e internacionales, como el GDPR en Europa o la Ley 1581 de 2012 en Colombia, y estar listo para responder a las auditorías de los organismos reguladores.</p>
+  <div class="minis" style="--cols:2" data-items="N1,N2"></div>
+</div></section>
+
+<!-- 20 INC reconoce -->
+<section class="slide" data-g="inc" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Gestión de incidentes · Reconoce</p>
+    <h2>Cuando algo falla, ¿qué sigue?</h2>
+  </header>
+  <p class="def">Es el proceso con el que una organización responde a problemas o interrupciones del gobierno de datos. Un incidente puede ser una violación de seguridad, la pérdida de datos o una falla en los procesos de gestión de la información.</p>
+  <div class="cards n4">
+    <article class="k"><b>Detección temprana</b><p>Entre más rápido se detecta, menor es el daño. Depende del monitoreo.</p></article>
+    <article class="k"><b>Contención</b><p>Frenar la propagación del problema antes de investigar.</p></article>
+    <article class="k"><b>Resolución</b><p>Restablecer la operación y corregir la causa.</p></article>
+    <article class="k"><b>Medidas preventivas</b><p>Evitar futuros incidentes con nuevos controles y aprendizajes.</p></article>
+  </div>
+  <p class="callout"><b>También se evalúa.</b> El rendimiento del gobierno de datos debe incluir la capacidad de gestionar incidentes de forma eficiente y minimizar su impacto: tener un plan de contingencia, actualizarlo y hacer simulacros para que el personal esté preparado.</p>
+  <p class="nx">Siguiente: ordenas la respuesta al incidente del mes 9.</p>
+</div></section>
+
+<!-- 21 INC ordena -->
+<section class="slide" data-g="inc" data-st="Ordena" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Gestión de incidentes · Ordena</p>
+    <h2>La descarga de las 2:07 a. m.</h2>
+    <p class="sub">Seis pasos llegaron desordenados. Ordénalos con las flechas y verifica.</p>
+  </header>
+  <div class="ap">
+    <div>
+      <ol class="ord" id="ord"></ol>
+      <div class="acts">
+        <button class="btn pri" id="ordCheck" type="button">Verificar orden</button>
+        <button class="btn ghost" id="ordShow" type="button">Orden esperado</button>
+        <button class="btn ghost" id="ordReset" type="button">Mezclar</button>
+      </div>
+    </div>
+    <div class="panel" id="ordInfo" aria-live="polite"></div>
+  </div>
+</div></section>
+
+<!-- 22 INC aplica -->
+<section class="slide" data-g="inc" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Gestión de incidentes · Aplica</p><h2>Tres situaciones de incidente</h2></header>
+  <div class="minis" data-items="I1,I2,I3"></div>
+</div></section>
+
+<!-- 23 EST reconoce 1 -->
+<section class="slide" data-g="est" data-st="Reconoce 1" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Estrategias de mejora · Reconoce 1 de 2</p>
+    <h2>Mover la operación</h2>
+    <p class="sub">El rendimiento no solo se mantiene: se mejora. Estas cinco estrategias actúan sobre procesos, tecnología y vigilancia.</p>
+  </header>
+  <div class="cards n5">
+    <article class="k"><b>Optimización de procesos</b><p>Revisar flujos de trabajo, eliminar redundancias y reestructurar para reducir esperas. Mejora la eficiencia y reduce costos.</p></article>
+    <article class="k"><b>Automatización</b><p>Menos carga manual en limpieza, validación y análisis. Detecta y corrige errores en tiempo real.</p></article>
+    <article class="k"><b>Tecnologías avanzadas</b><p>Aprendizaje automático e inteligencia artificial analizan grandes volúmenes y encuentran patrones que no se ven a simple vista.</p></article>
+    <article class="k"><b>Mejora de la infraestructura</b><p>Servidores, bases de datos y almacenamiento que soporten el crecimiento. La nube aporta escalabilidad, flexibilidad y acceso seguro.</p></article>
+    <article class="k"><b>Monitoreo continuo</b><p>Informes continuos que permiten detectar caídas, errores de calidad o problemas de seguridad y corregirlos a tiempo.</p></article>
+  </div>
+  <p class="nx">Siguiente: las otras cinco, que sostienen el sistema en el tiempo.</p>
+</div></section>
+
+<!-- 24 EST reconoce 2 -->
+<section class="slide" data-g="est" data-st="Reconoce 2" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Estrategias de mejora · Reconoce 2 de 2</p>
+    <h2>Sostener el sistema</h2>
+    <p class="sub">Aquí aparecen la capacitación y la mejora continua, conceptos clave 5 y 6 de la guía.</p>
+  </header>
+  <div class="cards n5">
+    <article class="k"><b>Capacitación continua</b><p>El personal domina herramientas, buenas prácticas y la importancia de la calidad y la seguridad. Corrige errores rápido y decide mejor.</p></article>
+    <article class="k"><b>Gestión eficiente de incidentes</b><p>Un plan de contingencia ante violaciones de seguridad, pérdida de datos o fallos, para minimizar el impacto.</p></article>
+    <article class="k"><b>Mejora continua</b><p>Revisar y ajustar políticas, procesos y herramientas con ciclos de retroalimentación, para adaptarse al entorno tecnológico y normativo.</p></article>
+    <article class="k"><b>Uso de KPIs</b><p>Medir el éxito de las acciones implementadas con datos concretos: velocidad, precisión y satisfacción de usuarios.</p></article>
+    <article class="k"><b>Colaboración interdepartamental</b><p>Los datos no son solo cosa de TI: cada área participa para que se gestionen de forma coherente y se aprovechen al máximo.</p></article>
+  </div>
+  <p class="nx">Siguiente: eliges la estrategia para cada problema y simulas tres ciclos de mejora.</p>
+</div></section>
+
+<!-- 25 EST aplica -->
+<section class="slide" data-g="est" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Estrategias de mejora · Aplica</p><h2>¿Qué estrategia encaja?</h2></header>
+  <div class="minis" data-items="E1,E2,E3"></div>
+</div></section>
+
+<!-- 26 EST lab -->
+<section class="slide" data-g="est" data-st="Experimenta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Estrategias de mejora · Experimenta</p>
+    <h2>Mejora continua: mide, elige, repite</h2>
+    <p class="sub">Tienes 3 turnos: mira la dimensión más débil (en rojo), elige la estrategia que más la sube y observa el radar.</p>
+  </header>
+  <div class="acc2">
+    <div class="lab radar"><svg id="rdSvg" viewBox="0 0 340 245" role="img" aria-label="Radar de seis dimensiones del gobierno de datos"></svg><p class="stat" id="rdScore" style="text-align:center"></p></div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-bottom:.3rem"><p class="lbl" id="rdRound" style="margin:0"></p><button class="btn ghost" type="button" id="rdReset" style="min-height:36px;padding:.2rem .8rem;font-size:.85rem">Reiniciar laboratorio</button></div>
+      <div class="strat" id="rdStrat"></div>
+      <div class="panel" id="rdOut" style="min-height:0;margin-top:.6rem;padding:.7rem .9rem" aria-live="polite"></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 27 CAS reconoce -->
+<section class="slide" data-g="cas" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Casos de estudio · Reconoce</p>
+    <h2>Seis organizaciones que ya lo hicieron</h2>
+    <p class="sub">Ejemplos de la guía: desafío, estrategia y resultado.</p>
+  </header>
+  <div class="cards n6">
+    <article class="k"><b>Minorista global</b><p>Demasiados datos de tiendas en todo el mundo. <span class="eg">Automatizó el análisis con IA y aprendizaje automático: ajustó inventarios en tiempo real y redujo costos.</span></p></article>
+    <article class="k"><b>Hospital universitario</b><p>Historias clínicas duplicadas y con errores. <span class="eg">Monitoreo continuo en tiempo real que detecta errores y avisa al personal: mejor calidad y menos tiempo de corrección.</span></p></article>
+    <article class="k"><b>Banco</b><p>Amenazas cibernéticas constantes sobre datos sensibles. <span class="eg">Evaluación continua de riesgos, capacitación en ciberseguridad, cifrado y autenticación multifactor: más confianza de los clientes.</span></p></article>
+    <article class="k"><b>Telecomunicaciones</b><p>Caídas por saturación de las bases de datos. <span class="eg">Migró parte a la nube y optimizó las bases: redujo más del 50 % el tiempo de procesamiento.</span></p></article>
+    <article class="k"><b>Logística internacional</b><p>Inexactitud de inventario, retrasos y errores de entrega. <span class="eg">Seguimiento en tiempo real y sensores IoT: datos precisos y rutas optimizadas.</span></p></article>
+    <article class="k"><b>Universidad</b><p>Registros de estudiantes inexactos e inconsistentes. <span class="eg">Auditorías regulares y automatización de la entrada y verificación: menos errores administrativos.</span></p></article>
+  </div>
+</div></section>
+
+<!-- 28 CAS aplica 1 -->
+<section class="slide" data-g="cas" data-st="Aplica 1" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Casos de estudio · Aplica 1 de 2</p><h2>¿Qué estrategia fue la clave?</h2></header>
+  <div class="minis" data-items="C1,C2,C3"></div>
+</div></section>
+
+<!-- 29 CAS aplica 2 -->
+<section class="slide" data-g="cas" data-st="Aplica 2" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Casos de estudio · Aplica 2 de 2</p><h2>¿Y en estos tres?</h2></header>
+  <div class="minis" data-items="C4,C5,C6"></div>
+</div></section>
+
+<!-- 30 REV reconoce -->
+<section class="slide" data-g="rev" data-st="Reconoce" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow">Revisión de conceptos · Reconoce</p>
+    <h2>Lo que se revisa cada vez que el entorno cambia</h2>
+    <p class="sub">Revisar los conceptos mantiene alineados los principios con los objetivos de la organización y con las mejores prácticas.</p>
+  </header>
+  <div class="tw"><table>
+    <thead><tr><th>Concepto</th><th>Qué se revisa</th><th>Cuándo toca revisarlo</th></tr></thead>
+    <tbody>
+      <tr><td>KPIs</td><td>Que reflejen las nuevas prioridades, además de los tradicionales (precisión, tiempo de respuesta).</td><td>Cambian los objetivos o se adoptan tecnologías de análisis avanzadas.</td></tr>
+      <tr><td>Control de la calidad de datos</td><td>Políticas de calidad, herramientas de validación y auditorías periódicas.</td><td>Los datos se vuelven obsoletos, inconsistentes o incompletos.</td></tr>
+      <tr><td>Seguridad de los datos</td><td>Cifrado, autenticación multifactor, detección de intrusos y planes de contingencia.</td><td>Las amenazas cibernéticas evolucionan.</td></tr>
+      <tr><td>Gestión de incidentes</td><td>Planes de respuesta y simulacros.</td><td>Crecen el volumen y las tecnologías, y aparecen nuevos tipos de incidentes.</td></tr>
+      <tr><td>Mejora continua</td><td>Prácticas, tecnologías, procesos y políticas de seguridad.</td><td>El entorno empresarial está en constante cambio.</td></tr>
+      <tr><td>Cumplimiento normativo</td><td>Políticas, auditorías internas y capacitación en las leyes aplicables.</td><td>Las leyes de protección de datos evolucionan.</td></tr>
+      <tr><td>Educación y capacitación</td><td>Programas de formación en gestión segura y conforme a las normas.</td><td>Cambian las tecnologías y las regulaciones.</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<!-- 31 REV aplica -->
+<section class="slide" data-g="rev" data-st="Aplica" tabindex="-1"><div class="in">
+  <header><p class="eyebrow">Revisión de conceptos · Aplica</p><h2>Cambió algo: ¿qué revisas?</h2></header>
+  <div class="minis" data-items="R1,R2,R3"></div>
+</div></section>
+
+<!-- 32 QUIZ -->
+<section class="slide" data-g="q" data-st="Quiz" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">Quiz</p>
+    <h2>¿Qué tanto retuviste?</h2>
+  </header>
+  <div id="quiz-box"></div>
+</div></section>
+
+<!-- 33 CIERRE: mapa -->
+<section class="slide" data-g="x" data-st="Mapa" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">Cierre · Mapa</p>
+    <h2>Concepto, síntoma, respuesta</h2>
+    <p class="sub" id="sum"></p>
+  </header>
+  <div class="tw" style="--pc:var(--accent)"><table>
+    <thead><tr><th>Concepto</th><th>Síntoma del caso</th><th>Lo que se hace</th></tr></thead>
+    <tbody>
+      <tr><td>KPIs</td><td>Dos cifras de ventas y nadie sabe si funciona</td><td>Tablero con indicadores de resultado, revisado cada mes</td></tr>
+      <tr><td>Calidad de datos</td><td>31.000 duplicados e inventario que no coincide</td><td>Validación, verificación, limpieza y detección de duplicados automáticas</td></tr>
+      <tr><td>Monitoreo y automatización</td><td>Descarga de las 2:07 a. m. detectada 11 días después</td><td>Monitoreo y auditoría continuos, con alertas e informes automáticos</td></tr>
+      <tr><td>Otras técnicas</td><td>Reclamo de 40 días, tablero lento, brecha con el sector</td><td>Encuestas, auditorías, benchmarking, riesgos, pruebas de estrés y cumplimiento</td></tr>
+      <tr><td>Gestión de incidentes</td><td>Respuesta tardía y sin plan</td><td>Detectar, contener, resolver y prevenir, con plan y simulacros</td></tr>
+      <tr><td>Estrategias de mejora</td><td>Solo 22 % del personal capacitado</td><td>Optimización, automatización, IA, nube, capacitación y colaboración</td></tr>
+      <tr><td>Casos y revisión</td><td>Otros sectores ya lo lograron</td><td>Aprender de ellos y revisar los conceptos cuando cambia el entorno</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<!-- 34 CIERRE: ciclo -->
+<section class="slide" data-g="x" data-st="Conclusiones" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">Cierre · Pregunta problema</p>
+    <h2>Un ciclo que no se detiene</h2>
+  </header>
+  <div class="layers">
+    <div class="cyc">
+      <svg viewBox="0 0 260 260" role="img" aria-label="Ciclo de mejora continua: medir, analizar, mejorar y revisar">
+        <circle class="arc" cx="130" cy="130" r="62" stroke="#A5F01C" stroke-dasharray="90 299.6" stroke-dashoffset="0" transform="rotate(-90 130 130)"/>
+        <circle class="arc" cx="130" cy="130" r="62" stroke="#5CC8FF" stroke-dasharray="90 299.6" stroke-dashoffset="-97.4" transform="rotate(-90 130 130)"/>
+        <circle class="arc" cx="130" cy="130" r="62" stroke="#FFC857" stroke-dasharray="90 299.6" stroke-dashoffset="-194.8" transform="rotate(-90 130 130)"/>
+        <circle class="arc" cx="130" cy="130" r="62" stroke="#4FE3C1" stroke-dasharray="90 299.6" stroke-dashoffset="-292.2" transform="rotate(-90 130 130)"/>
+        <text x="190" y="52" style="text-anchor:start">1 Medir</text>
+        <text x="190" y="216" style="text-anchor:start">2 Analizar</text>
+        <text x="70" y="216" style="text-anchor:end">3 Mejorar</text>
+        <text x="70" y="52" style="text-anchor:end">4 Revisar</text>
+        <text class="ct" x="130" y="127">Mejora</text>
+        <text class="ct" x="130" y="145">continua</text>
+      </svg>
+    </div>
+    <div>
+      <p class="def" style="font-size:1.05rem">Evaluar el gobierno de datos es un proceso continuo y multidimensional: lo que se mide hoy alimenta la mejora de mañana.</p>
+      <ol class="concl2">
+        <li><b>Evaluar:</b> con técnicas y herramientas que midan calidad, seguridad y rendimiento.</li>
+        <li><b>Mejorar:</b> optimizando procesos, automatizando tareas repetitivas y usando nuevas tecnologías.</li>
+        <li><b>Capacitar:</b> un personal formado maneja los datos de forma segura y eficiente.</li>
+        <li><b>Monitorear y automatizar:</b> para detectar problemas en tiempo real y actuar de forma proactiva.</li>
+        <li><b>Tecnologías emergentes:</b> IA, aprendizaje automático y nube dan análisis más profundo, seguridad y escalabilidad.</li>
+        <li><b>Cumplir:</b> revisar el marco normativo (GDPR, Ley 1581) evita sanciones y protege la reputación.</li>
+        <li><b>Cultura:</b> una organización centrada en la mejora continua y en la calidad de los datos sigue siendo competitiva.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="foot">
+    <span>Fuentes:</span>
+    <a href="http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html" target="_blank" rel="noopener">Ley 1581 de 2012</a>
+    <a href="https://www.sic.gov.co/tema/proteccion-de-datos-personales" target="_blank" rel="noopener">SIC, protección de datos</a>
+    <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">GDPR</a>
+    <span>Material de la unidad G5, Fundamentos de Inteligencia de Negocios y Gobierno de Datos. Caso, empresa y cifras ficticios.</span>
+  </div>
+</div></section>
+
+<!-- 35 CIERRE: informe -->
+<section class="slide" data-g="x" data-st="Informe a la junta" tabindex="-1"><div class="in">
+  <header>
+    <p class="eyebrow" style="--pc:var(--accent)">Cierre · Tu entrega</p>
+    <h2>Tu informe a la junta</h2>
+    <p class="sub">Las cuatro respuestas, armadas con tus decisiones. Úsalas para el guion del pitch de 90 segundos (15 s contexto, 30 s diagnóstico, 30 s plan, 15 s meta) y para el documento ejecutivo.</p>
+  </header>
+  <div class="brief" id="brief">
+    <article class="bf"><h3><span class="n">1</span>¿Funciona el gobierno de datos?</h3><p id="b1"></p></article>
+    <article class="bf"><h3><span class="n">2</span>¿Cómo lo evaluamos de forma continua?</h3><p id="b2"></p></article>
+    <article class="bf"><h3><span class="n">3</span>¿Qué mejoramos primero y cómo?</h3><p id="b3"></p></article>
+    <article class="bf"><h3><span class="n">4</span>¿Qué hicieron otros y qué mantenemos vivo?</h3><p id="b4"></p></article>
+  </div>
+  <div class="acts" style="margin-top:0">
+    <button class="btn pri" type="button" id="copyBrief">Copiar informe</button>
+    <span class="note" id="copyMsg" aria-live="polite"></span>
+    <span class="note" id="briefSt" style="margin-left:auto"></span>
+  </div>
+</div></section>
+</main>
+
+<div class="pager"><div class="pager-in">
+  <button class="btn ghost" id="prev" type="button">← Anterior</button>
+  <p class="pager-c" aria-live="polite"><span id="pgLbl"></span><span class="hud" id="hud" aria-label="Retos resueltos"></span></p>
+  <button class="btn pri" id="next" type="button">Siguiente →</button>
+</div></div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a};
+const fmt=(n,d)=>n.toFixed(d==null?1:d).replace('.',',');
+
+/* ---------- pasos ---------- */
+const S=$$('.slide');
+const GROUPS=[
+ {k:'inicio',n:'Inicio'},{k:'caso',n:'Caso'},{k:'mapa',n:'Marco'},{k:'kpi',n:'KPIs'},{k:'cal',n:'Calidad'},
+ {k:'mon',n:'Monitoreo'},{k:'tec',n:'Técnicas'},{k:'inc',n:'Incidentes'},{k:'est',n:'Estrategias'},
+ {k:'cas',n:'Casos'},{k:'rev',n:'Revisión'},{k:'q',n:'Quiz'},{k:'x',n:'Cierre'}
+];
+const GN={};GROUPS.forEach(g=>{GN[g.k]=g.n});
+let cur=0;
+const nav=$('#nav'),chips={};
+GROUPS.forEach(g=>{
+  const idx=S.findIndex(s=>s.dataset.g===g.k);
+  const a=document.createElement('a');a.href='#paso-'+(idx+1);a.textContent=g.n;a.dataset.go=idx;
+  nav.appendChild(a);chips[g.k]=a;
+});
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function go(i,noHash){
+  i=Math.max(0,Math.min(S.length-1,i));
+  S.forEach((s,k)=>s.classList.toggle('on',k===i));
+  cur=i;
+  const s=S[i],g=s.dataset.g;
+  Object.keys(chips).forEach(k=>{if(k===g){chips[k].setAttribute('aria-current','true');nav.scrollTo({left:chips[k].offsetLeft-nav.clientWidth/2+chips[k].clientWidth/2,behavior:reduce?'auto':'smooth'})}else chips[k].removeAttribute('aria-current')});
+  $('#prog').style.width=((i+1)/S.length*100)+'%';
+  $('#progWrap').setAttribute('aria-valuenow',String(Math.round((i+1)/S.length*100)));
+  $('#pgLbl').innerHTML='<b>'+(i+1)+' / '+S.length+'</b><span class="pager-st"> · '+GN[g]+(s.dataset.st===GN[g]?'':' · '+s.dataset.st)+'</span>';
+  $('#prev').disabled=i===0;
+  const last=i===S.length-1;$('#next').textContent=last?'Reiniciar ↺':'Siguiente →';
+  s.scrollTop=0;
+  try{s.focus({preventScroll:true})}catch(e){}
+  if(!noHash){try{if(location.hash!=='#paso-'+(i+1))location.hash='paso-'+(i+1)}catch(e){}}
+  if(s.dataset.st==='Mapa')summary();
+  if(s.dataset.st==='Informe a la junta')fillBrief();
+  const hh=s.querySelector('h2');if(hh)scramble(hh);
+}
+$('#prev').addEventListener('click',()=>go(cur-1));
+$('#next').addEventListener('click',()=>{if(cur===S.length-1)resetAll();else go(cur+1)});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go]');
+  if(t){e.preventDefault();go(+t.dataset.go);return}
+  if(e.target.closest('[data-next]'))go(cur+1);
+});
+document.addEventListener('keydown',e=>{
+  const tg=e.target;
+  if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'))return;
+  if(e.altKey||e.ctrlKey||e.metaKey)return;
+  if(e.key==='ArrowRight')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+function fromHash(){const m=/^#paso-(\d+)$/.exec(location.hash||'');return m?(+m[1]-1):0}
+window.addEventListener('hashchange',()=>{const i=fromHash();if(i!==cur)go(i,true)});
+
+/* ---------- efectos ---------- */
+const GL='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#$%&@*+';
+function scramble(el){
+  if(!el.dataset.t)el.dataset.t=el.textContent;
+  const t=el.dataset.t;
+  clearInterval(el._iv);
+  if(reduce){el.textContent=t;return}
+  el.innerHTML='<span class="sr"></span><span aria-hidden="true"></span>';
+  el.firstChild.textContent=t;
+  const vis=el.lastChild;let f=0;const N=16;
+  el._iv=setInterval(()=>{
+    f++;const rv=Math.floor(t.length*f/N);let o='';
+    for(let i=0;i<t.length;i++){const c=t[i];o+=(i<rv||c===' ')?c:GL[Math.floor(Math.random()*GL.length)]}
+    vis.textContent=o;
+    if(f>=N){clearInterval(el._iv);el.textContent=t}
+  },35);
+}
+function typeTo(el,text){
+  clearInterval(el._iv);
+  if(reduce){el.textContent=text;return}
+  let f=0;const N=12;
+  el._iv=setInterval(()=>{
+    f++;const rv=Math.floor(text.length*f/N);let o='';
+    for(let i=0;i<text.length;i++){const c=text[i];o+=(i<rv||c===' '||c==='?')?c:GL[Math.floor(Math.random()*GL.length)]}
+    el.textContent=o;
+    if(f>=N){clearInterval(el._iv);el.textContent=text}
+  },40);
+}
+function countTo(el,to,from){
+  clearInterval(el._iv);
+  if(reduce||isNaN(to)){el.textContent=String(to);return}
+  const t0=performance.now(),D=700;
+  el._iv=setInterval(()=>{
+    const k=Math.min(1,(performance.now()-t0)/D);
+    el.textContent=String(Math.round(from+(to-from)*k));
+    if(k>=1)clearInterval(el._iv);
+  },30);
+}
+
+/* ---------- tablero del inicio ---------- */
+const KP=[
+ {l:'Calidad de datos',v:['?','71 %','94 %'],g:[0,71,94]},
+ {l:'Tiempo de respuesta',v:['?','4,2 min','8 s'],g:[0,20,92]},
+ {l:'Disponibilidad',v:['?','97,1 %','99,7 %'],g:[0,55,95]},
+ {l:'Detección de incidentes',v:['?','11 días','15 min'],g:[0,8,96]},
+ {l:'Cumplimiento normativo',v:['?','58 %','96 %'],g:[0,58,96]},
+ {l:'Personal capacitado',v:['?','22 %','90 %'],g:[0,22,90]}
+];
+const SC=['?','47','91'],STN=['Sin medir','Mes 12','Meta año 2'];
+const CAPT=[
+ 'Doce meses, USD 1,2 millones, 14 políticas y un comité. Y ninguna cifra que diga si funciona. Sin medir, el gobierno de datos es una creencia.',
+ 'Primera medición: el programa existe, pero rinde a medias. Dónde duele y cuánto ya no es opinión, es un número.',
+ 'La meta del año 2: el mismo programa, ahora medido, automatizado y mejorado cada trimestre.'
+];
+let recS=0,scPrev=0;
+$('#tiles').innerHTML=KP.map((k,i)=>'<div class="tile" id="tile'+i+'"><span class="tl">'+k.l+'</span><b class="tv">?</b><i class="tm"><u></u></i></div>').join('');
+function renderRec(s){
+  s=+s;recS=s;
+  const fig=$('#rec');fig.dataset.s=String(s);
+  $$('.seg button',fig).forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.s===s)));
+  $('#recSt').textContent=STN[s];
+  KP.forEach((k,i)=>{
+    const t=$('#tile'+i);
+    typeTo($('.tv',t),k.v[s]);
+    $('.tm u',t).style.width=k.g[s]+'%';
+    const g=k.g[s];t.dataset.lv=g>=75?'ok':g>=40?'mid':'bad';
+  });
+  const to=+SC[s];countTo($('#scN'),isNaN(to)?SC[s]:to,scPrev);scPrev=isNaN(to)?0:to;
+  $('#recCap').textContent=CAPT[s];
+}
+$('#rec .seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)renderRec(b.dataset.s)});
+
+/* ---------- tachaduras ---------- */
+$$('.redact').forEach(b=>b.addEventListener('click',()=>{
+  const on=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',String(on));
+  b.setAttribute('aria-label',on?'Dato revelado, pulsa para tachar':'Dato tachado, pulsa para mostrar');
+}));
+
+/* ---------- línea de tiempo ---------- */
+const MOM=[
+ {t:'Mes 0',h:'Arranca el programa',p:'La junta aprueba USD 1,2 millones para gobernar los datos de Supermercados La Ceiba: 38 tiendas en el suroccidente y 1,2 millones de clientes en el Club Ceiba. Se crea un comité, se nombran dueños de datos y se promete “datos confiables para decidir”.',log:'comite_datos.crear()  |  presupuesto: USD 1,2 M'},
+ {t:'Mes 3',h:'Se publican 14 políticas',p:'Calidad, accesos, retención, privacidad. Quedan guardadas en un repositorio compartido. Nadie definió cómo se va a saber si se cumplen.',log:'politicas_publicadas = 14  |  politicas_medidas = 0'},
+ {t:'Mes 5',h:'Dos cifras de ventas',p:'Finanzas reporta ventas del mes por 18.400 millones de pesos y Comercial por 19.300 millones. Cada área defiende su número y la reunión termina sin decisión.',log:'ventas_mes: finanzas=18.400  comercial=19.300  diferencia=4,9 %'},
+ {t:'Mes 7',h:'Góndolas vacías con inventario “disponible”',p:'El sistema dice que hay existencias de 120 productos, pero las góndolas están vacías. Los datos de inventario no coinciden con el físico y las compras se hacen con cifras equivocadas.',log:'sku_con_stock_sistema=120  |  stock_fisico=0'},
+ {t:'Mes 9',h:'Una descarga a las 2:07 a. m.',p:'Un usuario de prácticas descarga 214.000 registros de clientes un sábado, desde una IP externa. Se descubre 11 días después, por casualidad, cuando alguien revisa la bitácora.',log:'EXPORT pract.bi03  214.000 filas  ip_externa  |  detectado: +11 dias'},
+ {t:'Mes 11',h:'Duplicados, reclamos y un tablero lento',p:'31.000 clientes están duplicados y reciben cada promoción dos veces. Una clienta reclama porque su solicitud de actualizar datos tardó 40 días. Y el tablero de ventas demora 4 minutos en cargar.',log:'clientes_duplicados=31.000  |  solicitud=40 dias  |  carga_tablero=4,2 min'},
+ {t:'Mes 12',h:'La junta hace una pregunta',p:'“Invertimos un año y USD 1,2 millones. ¿Funciona el gobierno de datos? ¿Cómo lo sabemos? ¿Qué mejoramos primero?” Te piden respuestas y un plan para la próxima junta.',log:'junta_directiva.pregunta("¿funciona?")  ->  respuesta: ???'}
+];
+let tlI=0;
+const rail=$('#tlRail');
+MOM.forEach((m,i)=>{const b=document.createElement('button');b.type='button';b.className='tl-n';b.dataset.i=i;b.innerHTML='<i></i>'+m.t;rail.appendChild(b)});
+function renderTl(){
+  const m=MOM[tlI];
+  $$('.tl-n',rail).forEach((b,i)=>{b.className='tl-n'+(i<tlI?' past':'')+(i===tlI?' now':'');b.setAttribute('aria-current',i===tlI?'step':'false')});
+  $('#tlPanel').innerHTML='<p class="tl-t">'+m.t+'</p><h3 class="tl-h">'+m.h+'</h3><p class="tl-p">'+m.p+'</p><p class="tl-log">'+m.log+'</p>';
+  $('#tlPrev').disabled=tlI===0;
+  $('#tlNext').disabled=tlI===MOM.length-1;
+  $('#tlHint').textContent=tlI===MOM.length-1?'Ya conoces el caso. Sigue al siguiente paso.':'Momento '+(tlI+1)+' de '+MOM.length;
+}
+rail.addEventListener('click',e=>{const b=e.target.closest('.tl-n');if(b){tlI=+b.dataset.i;renderTl()}});
+$('#tlPrev').addEventListener('click',()=>{tlI=Math.max(0,tlI-1);renderTl()});
+$('#tlNext').addEventListener('click',()=>{tlI=Math.min(MOM.length-1,tlI+1);renderTl()});
+renderTl();
+
+/* ---------- retos (aplica) ---------- */
+function bars(){
+  const D=[['Calidad de datos',71,82,95],['Cumplimiento normativo',58,78,96],['Personal capacitado',22,55,88],['Incidentes resueltos en 24 h',40,70,92]];
+  return '<div class="bn">'+D.map(d=>'<div><h4>'+d[0]+'</h4>'+
+    '<div class="bb me"><span>La Ceiba</span><u style="width:'+d[1]+'%"></u><b>'+d[1]+'</b></div>'+
+    '<div class="bb"><span>Sector</span><u style="width:'+d[2]+'%"></u><b>'+d[2]+'</b></div>'+
+    '<div class="bb ld"><span>Líder</span><u style="width:'+d[3]+'%"></u><b>'+d[3]+'</b></div></div>').join('')+'</div>';
+}
+const ITEMS=[
+ {id:'K1',tag:'KPI',t:'El tablero que no carga',ev:'En la temporada alta de diciembre, el tablero de ventas tarda 4 minutos en cargar y los gerentes dejan de usarlo.',ask:'¿Qué KPI mide este síntoma?',
+  o:['Tiempo de respuesta de consultas','Tasa de errores en los datos','Porcentaje de personal capacitado','Número de políticas publicadas'],c:0,
+  why:'El tiempo de respuesta de consultas mide cuánto tarda el sistema en dar la información cuando se le pide. Es un KPI de rendimiento y de experiencia de usuario.'},
+ {id:'K2',tag:'KPI',t:'Dos cifras de ventas',ev:'Finanzas reporta ventas por 18.400 millones y Comercial por 19.300 millones. Cada área defiende su número.',ask:'¿Qué KPI mide este síntoma?',
+  o:['Tasa de errores e inconsistencias en los datos','Tiempo de respuesta de consultas','Disponibilidad del sistema','Número de reuniones del comité'],c:0,
+  why:'Dos fuentes que no coinciden son inconsistencias. La tasa de errores en los datos mide cuántas se detectan a lo largo del tiempo.'},
+ {id:'K3',tag:'KPI',t:'Once días para enterarse',ev:'Una descarga masiva ocurrió un sábado a las 2:07 a. m. y solo se descubrió 11 días después.',ask:'¿Qué KPI mide este síntoma?',
+  o:['Tiempo de detección y resolución de incidentes','Velocidad de procesamiento','Terabytes almacenados','Satisfacción de usuarios'],c:0,
+  why:'Lo que falló es la capacidad de responder a incidentes. Medir el tiempo para detectarlos y resolverlos muestra si el monitoreo funciona.'},
+ {id:'Q1',tag:'Calidad',t:'Marta Ríos y Marta Rios',ev:'El mismo cliente aparece dos veces, con el mismo correo y el mismo celular. Las promociones le llegan duplicadas y el conteo de clientes se infla.',ask:'¿Qué dimensión de la calidad falla?',
+  o:['Consistencia','Completitud','Actualización','Disponibilidad'],c:0,
+  why:'Un mismo cliente representado dos veces es un problema de consistencia. La detección de duplicados es una de las tareas que las herramientas automatizan.'},
+ {id:'Q2',tag:'Calidad',t:'Un correo que rebota',ev:'El correo de una clienta está escrito luisa.gomez#correo.co. Ninguna promoción le llega.',ask:'¿Qué dimensión de la calidad falla?',
+  o:['Precisión','Completitud','Consistencia','Actualización'],c:0,
+  why:'El dato existe, pero es incorrecto. Una validación de formato al capturarlo lo habría evitado.'},
+ {id:'Q3',tag:'Calidad',t:'La dirección de 2021',ev:'Un cliente se mudó hace años y su registro sigue con la dirección anterior. Nadie lo actualiza desde 2021.',ask:'¿Qué dimensión de la calidad falla?',
+  o:['Actualización','Precisión','Completitud','Consistencia'],c:0,
+  why:'Los datos pueden volverse obsoletos con el tiempo. La calidad es dinámica y requiere revisiones periódicas.'},
+ {id:'A1',tag:'Automatización',t:'El informe de cinco días',ev:'Cada mes, dos analistas arman en Excel el informe de calidad. Tardan cinco días y llega cuando el problema ya pasó.',ask:'¿Qué aporta automatizar esta evaluación?',
+  o:['Informes regulares y detección de problemas antes de que impacten la operación','Eliminar la necesidad de definir KPIs','Reemplazar las auditorías legales','Reducir la cantidad de datos que se guardan'],c:0,
+  why:'Las herramientas automatizadas recopilan y analizan datos de forma constante y generan informes regulares, lo que agiliza la detección de problemas.'},
+ {id:'A2',tag:'Monitoreo',t:'La revisión mensual de accesos',ev:'Una persona revisa a mano, una vez al mes, quién accedió a la base de clientes.',ask:'¿Qué herramienta mejora esto?',
+  o:['Monitoreo y auditoría continuos que registran quién, cuándo y cómo','Una reunión mensual más larga','Un respaldo más frecuente','Un tablero con más colores'],c:0,
+  why:'El monitoreo proactivo permite detectar rápido accesos no autorizados y corregirlos antes de que causen mayores inconvenientes.'},
+ {id:'A3',tag:'Automatización',t:'Automatizar todo y quitar a las personas',ev:'Alguien propone automatizar todo el análisis y sacar a las personas del proceso.',ask:'¿Qué enfoque propone la guía?',
+  o:['Automatizar la recopilación y el análisis, y dedicar al equipo a tomar acciones correctivas','Automatizar solo la limpieza y no los informes','No automatizar nada hasta que haya más presupuesto','Sustituir los KPIs por la opinión de los gerentes'],c:0,
+  why:'La automatización libera al equipo de tareas operativas para que se concentre en tomar acciones correctivas, que es donde se necesita criterio.'},
+ {id:'T1',tag:'Técnica',t:'El doble de clientes',ev:'La Ceiba proyecta duplicar el Club Ceiba en dos años y quiere saber si el sistema lo soportará.',ask:'¿Qué técnica usas?',
+  o:['Evaluación de la escalabilidad: pruebas de estrés y simulaciones','Encuesta de satisfacción a los usuarios','Benchmarking con otros supermercados','Auditoría interna de políticas'],c:0,
+  why:'La escalabilidad verifica que el rendimiento se mantenga cuando crece el volumen de información. Se evalúa con pruebas de estrés y simulaciones de crecimiento.'},
+ {id:'T2',tag:'Técnica',t:'El catálogo que nadie usa',ev:'Los analistas dicen que el catálogo de datos es difícil de usar y que no encuentran lo que necesitan.',ask:'¿Qué técnica usas?',
+  o:['Encuestas a los usuarios del sistema','Pruebas de estrés','Análisis de riesgos','Evaluación del cumplimiento normativo'],c:0,
+  why:'Las encuestas dan retroalimentación sobre la facilidad de uso, la accesibilidad y la efectividad del sistema.'},
+ {id:'T3',tag:'Técnica',t:'Antes de gastar en más copias',ev:'La gerencia quiere decidir si invierte en copias de seguridad más frecuentes. Necesita saber qué falla es más probable y más dañina.',ask:'¿Qué técnica usas?',
+  o:['Análisis de riesgos','Benchmarking','Encuesta de satisfacción','Prueba de estrés'],c:0,
+  why:'El análisis de riesgos identifica y evalúa los riesgos asociados con la gestión de datos para tomar medidas preventivas, como controles de seguridad o copias más frecuentes.'},
+ {id:'B1',tag:'Benchmarking',t:'Cuatro indicadores, tres empresas',ev:'La junta pide comparar a La Ceiba con el promedio del sector y con el líder. Cuanto más alto, mejor. Cifras ficticias.',fig:bars(),ask:'¿Dónde es mayor la brecha frente al líder del sector?',
+  o:['Personal capacitado: 22 frente a 88','Cumplimiento normativo: 58 frente a 96','Calidad de datos: 71 frente a 95','Incidentes resueltos en 24 h: 40 frente a 92'],c:0,
+  why:'La brecha frente al líder es de 66 puntos en capacitación, frente a 52 en incidentes, 38 en cumplimiento y 24 en calidad. El benchmarking ayuda a identificar dónde la organización está por debajo de los estándares y da ideas para mejorar.',
+  ctlT:'Por dónde empezar',ctlP:'Al responder verás aquí por dónde empezar.',ctl:['Capacitación continua del personal','Gestión de incidentes con simulacros','Auditorías de cumplimiento periódicas']},
+ {id:'N1',tag:'Cumplimiento',t:'Clientes en España',ev:'La Ceiba vende en línea a 2.000 clientes en España, además de los colombianos.',ask:'¿Qué evaluación de cumplimiento corresponde?',
+  o:['Revisar de forma periódica el cumplimiento del GDPR, además de la Ley 1581','Solo la Ley 1581, porque la empresa es colombiana','Ninguna, porque 2.000 clientes son pocos','Solo el GDPR, y olvidar la Ley 1581'],c:0,
+  why:'La guía pide evaluaciones periódicas frente a regulaciones locales e internacionales. Si se ofrecen servicios a personas en la Unión Europea, el GDPR también es relevante.'},
+ {id:'N2',tag:'Cumplimiento',t:'Una solicitud de 40 días',ev:'Una clienta reclama porque su solicitud de actualizar datos tardó 40 días, y no hay un responsable claro.',ask:'¿Qué previene que se repita?',
+  o:['Auditorías regulares y un procedimiento para atender solicitudes de los titulares','Una campaña de publicidad','Más espacio de almacenamiento','Cambiar el nombre del Club Ceiba'],c:0,
+  why:'Las auditorías regulares aseguran que la gestión de datos cumple las normativas aplicables y que la organización está preparada para responder a los organismos reguladores.'},
+ {id:'I1',tag:'Incidente',t:'Después de resolverlo',ev:'Tras bloquear la cuenta y restablecer el servicio, el equipo agrega MFA, un límite de exportación diaria y alertas por volumen.',ask:'¿Qué momento de la gestión de incidentes es este?',
+  o:['Adopción de medidas preventivas','Detección temprana','Contención','Evaluación del alcance'],c:0,
+  why:'La gestión eficaz de incidentes incluye medidas preventivas para evitar futuros incidentes similares.'},
+ {id:'I2',tag:'Incidente',t:'Tres semanas sin respaldo',ev:'Un lunes se descubre que el respaldo nocturno de la bodega de datos falla desde hace tres semanas y se perdió un día completo de ventas que no se puede recuperar.',ask:'¿Qué tipo de incidente es?',
+  o:['Pérdida de datos','Violación de seguridad','Solicitud de un titular','Cambio de proveedor'],c:0,
+  why:'La guía menciona violaciones de seguridad, pérdida de datos y fallas en los procesos de gestión como tipos de incidente. Aquí el dato se perdió y no se puede recuperar.'},
+ {id:'I3',tag:'Incidente',t:'Un plan que nadie ha probado',ev:'El plan de respuesta a incidentes existe en un PDF de hace dos años. Nadie del equipo nuevo lo ha leído.',ask:'¿Qué recomienda la guía?',
+  o:['Actualizar los planes de respuesta y hacer simulacros','Guardar el PDF en una carpeta más segura','Esperar a que ocurra otro incidente','Eliminar el plan para evitar confusión'],c:0,
+  why:'Revisar y actualizar los planes y realizar simulacros asegura que el personal esté preparado para manejar cualquier eventualidad.'},
+ {id:'E1',tag:'Estrategia',t:'Tres días de limpieza manual',ev:'Cada semana, los analistas pasan tres días limpiando y validando datos a mano.',ask:'¿Qué estrategia encaja mejor?',
+  o:['Automatización','Capacitación continua','Colaboración interdepartamental','Mejora de la infraestructura'],c:0,
+  why:'La automatización reduce la carga manual en limpieza, validación y análisis, y puede detectar y corregir errores en tiempo real.'},
+ {id:'E2',tag:'Estrategia',t:'Cada área cuenta a su manera',ev:'Comercial, Finanzas y Marketing definen “cliente activo” con criterios distintos, y TI recibe la culpa de las diferencias.',ask:'¿Qué estrategia encaja mejor?',
+  o:['Colaboración interdepartamental','Mejora de la infraestructura','Tecnologías avanzadas','Optimización de procesos'],c:0,
+  why:'La gestión de datos no debe ser responsabilidad exclusiva de TI: cada departamento participa para que los datos se gestionen de manera coherente.'},
+ {id:'E3',tag:'Estrategia',t:'Cada diciembre se satura',ev:'Cada diciembre, los servidores y las bases de datos no dan abasto y el sistema se degrada.',ask:'¿Qué estrategia encaja mejor?',
+  o:['Mejora de la infraestructura, por ejemplo con la nube','Capacitación continua','Uso de KPIs','Gestión de incidentes'],c:0,
+  why:'A medida que crece el volumen de datos, la infraestructura debe soportarlo. La nube ofrece la escalabilidad necesaria sin sacrificar el rendimiento.'},
+ {id:'C1',tag:'Minorista',t:'La cadena global',ev:'Una cadena minorista debía manejar grandes volúmenes de datos de tiendas de todo el mundo para decidir mejor.',ask:'¿Qué estrategia aplicó?',
+  o:['Automatizar el análisis con IA y aprendizaje automático','Migrar a la nube','Capacitar a los cajeros','Auditorías de cumplimiento'],c:0,
+  why:'Automatizó gran parte del análisis de ventas y del comportamiento del cliente, identificó patrones de compra y ajustó inventarios en tiempo real, con menos costos y más satisfacción.'},
+ {id:'C2',tag:'Salud',t:'El hospital universitario',ev:'Un hospital tenía historias clínicas con datos duplicados y errores, lo que ponía en riesgo al paciente y la eficiencia.',ask:'¿Qué estrategia aplicó?',
+  o:['Monitoreo continuo en tiempo real que detecta errores y notifica','Benchmarking con otros hospitales','Encuestas a los pacientes','Pasar todo a un servidor propio'],c:0,
+  why:'Una herramienta de monitoreo detectaba errores de forma automática y avisaba a médicos y administrativos. Mejoró la calidad de los datos y redujo el tiempo de corrección.'},
+ {id:'C3',tag:'Banca',t:'El banco',ev:'Un banco enfrentaba amenazas cibernéticas constantes sobre los datos sensibles de sus clientes.',ask:'¿Qué estrategia aplicó?',
+  o:['Mejora continua centrada en la seguridad de los datos','Optimizar rutas de transporte','Reducir el volumen de datos','Cambiar de proveedor de nube cada año'],c:0,
+  why:'Adoptó evaluación continua de riesgos, capacitación en ciberseguridad, cifrado y autenticación multifactor. Fortaleció la seguridad y la confianza de los clientes.'},
+ {id:'C4',tag:'Telecomunicaciones',t:'La compañía telefónica',ev:'Las bases de datos de una compañía de telecomunicaciones se saturaban con el crecimiento y el rendimiento caía.',ask:'¿Qué estrategia aplicó?',
+  o:['Optimización de la infraestructura: nube y bases de datos escalables','Una campaña de capacitación','Más reuniones del comité de datos','Eliminar los respaldos'],c:0,
+  why:'Migró parte de su infraestructura a la nube y optimizó sus bases de datos: redujo más del 50 % el tiempo de procesamiento.'},
+ {id:'C5',tag:'Logística',t:'La empresa de transporte',ev:'Una empresa internacional tenía datos de inventario inexactos, con retrasos y errores en las entregas.',ask:'¿Qué estrategia aplicó?',
+  o:['Optimización de procesos con seguimiento en tiempo real y sensores IoT','Auditorías de cumplimiento normativo','Encuestas de satisfacción','Cifrar todo el inventario'],c:0,
+  why:'Los sistemas de seguimiento en tiempo real y los sensores IoT dieron datos más precisos de ubicación y estado, redujeron errores de entrega y optimizaron las rutas.'},
+ {id:'C6',tag:'Educación',t:'La universidad',ev:'Una universidad tenía registros de estudiantes inexactos e inconsistentes, con errores administrativos.',ask:'¿Qué estrategia aplicó?',
+  o:['Mejora continua de la calidad de datos: auditorías regulares y automatización de la entrada y verificación','Migrar a la nube','Contratar más profesores','Reducir el número de KPIs'],c:0,
+  why:'Adoptó un enfoque integral de validación: auditorías regulares y automatización de la entrada y verificación de datos. Mejoró la precisión y facilitó la planificación académica.'},
+ {id:'R1',tag:'Revisión',t:'Llega la inteligencia artificial',ev:'La empresa adopta tecnologías avanzadas de análisis de datos.',ask:'¿Qué conviene revisar?',
+  o:['Los KPIs: sumar indicadores de eficiencia y calidad de esos análisis a los tradicionales','Nada, los KPIs no cambian','Solo la contraseña de los usuarios','El color del tablero'],c:0,
+  why:'A medida que la organización evoluciona, los KPIs deben ajustarse para reflejar las nuevas prioridades.'},
+ {id:'R2',tag:'Revisión',t:'Una nueva regulación',ev:'Se aprueba un cambio en las leyes de protección de datos personales.',ask:'¿Qué conviene revisar?',
+  o:['El cumplimiento normativo: políticas, auditorías internas y capacitación en las leyes','El inventario de las góndolas','Las campañas de marketing','La velocidad del internet'],c:0,
+  why:'Las leyes cambian y la organización debe estar al día y preparada para responder a nuevas regulaciones o a cambios en las existentes.'},
+ {id:'R3',tag:'Revisión',t:'Ataques que cambian cada mes',ev:'Las amenazas cibernéticas evolucionan con rapidez.',ask:'¿Qué conviene revisar?',
+  o:['La seguridad: cifrado, autenticación multifactor, detección de intrusos y planes de contingencia','La paleta de colores corporativa','El horario de las tiendas','El tamaño del comité'],c:0,
+  why:'La seguridad requiere una revisión constante en un entorno donde las amenazas evolucionan rápidamente.'}
+];
+const AP={};
+function renderItem(it,mini){
+  const el=document.createElement('article');el.dataset.id=it.id;
+  const idx=shuffle(it.o.map((_,k)=>k));
+  const opts='<div class="qopts">'+idx.map(k=>'<button type="button" class="qo" data-id="'+it.id+'" data-k="'+k+'">'+it.o[k]+'</button>').join('')+'</div><div class="fb" hidden aria-live="polite"></div>';
+  if(mini){
+    el.className='mini';
+    el.innerHTML='<span class="tag">'+it.tag+'</span><h3>'+it.t+'</h3><p class="ev">'+it.ev+'</p><p class="ask">'+it.ask+'</p>'+opts;
+    return el;
+  }
+  const f=document.createDocumentFragment();
+  const left=document.createElement('div');left.className='case-card';left.dataset.id=it.id;
+  left.innerHTML='<span class="tag">'+it.tag+'</span><h3>'+it.t+'</h3><p class="ev">'+it.ev+'</p>'+(it.fig||'')+(it.ctl?'<div class="ctl"><b>'+it.ctlT+'</b><ul>'+it.ctl.map(c=>'<li>'+c+'</li>').join('')+'</ul></div><p class="ctl-ph">'+it.ctlP+'</p>':'');
+  const right=document.createElement('div');right.className='qside';right.dataset.id=it.id;
+  right.innerHTML='<p class="ask">'+it.ask+'</p>'+opts;
+  f.appendChild(left);f.appendChild(right);
+  return f;
+}
+function buildItems(){
+  $$('[data-items]').forEach(c=>{
+    c.innerHTML='';
+    const mini=c.classList.contains('minis');
+    c.dataset.items.split(',').forEach(id=>c.appendChild(renderItem(ITEMS.find(x=>x.id===id),mini)));
+  });
+}
+buildItems();
+function updHud(){
+  const h=$('#hud');if(!h)return;
+  const ids=Object.keys(AP),ok=ids.filter(k=>AP[k]).length;
+  h.innerHTML='<span>Retos</span><b>'+ids.length+' / '+ITEMS.length+'</b>'+(ids.length?'<span>· aciertos '+ok+'</span>':'');
+}
+function lock(it,chosen){
+  const scope=$('.mini[data-id="'+it.id+'"]')||$('.qside[data-id="'+it.id+'"]');
+  $$('.qo',scope).forEach(b=>{
+    const k=+b.dataset.k;b.disabled=true;
+    if(k===it.c)b.classList.add(chosen===it.c?'ok':'key');
+    if(k===chosen&&chosen!==it.c)b.classList.add('bad');
+  });
+  const head=chosen===it.c?'<p class="res ok">Correcto.</p>':'<p class="res bad">No es esa. Era: '+it.o[it.c]+'.</p>';
+  const fb=$('.fb',scope);
+  fb.innerHTML=head+'<p>'+it.why+'</p>';fb.hidden=false;
+  const cc=$('.case-card[data-id="'+it.id+'"] .ctl');if(cc)cc.classList.add('on');
+  updHud();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.qo[data-id]');if(!b||b.disabled)return;
+  const it=ITEMS.find(x=>x.id===b.dataset.id),k=+b.dataset.k;
+  AP[it.id]=(k===it.c);lock(it,k);
+});
+
+/* ---------- laboratorio: arma el tablero ---------- */
+const PICK=[
+ {id:'err',t:'Tasa de errores en los datos',d:'Calidad',ok:1,w:''},
+ {id:'resp',t:'Tiempo de respuesta de consultas',d:'Rendimiento',ok:1,w:''},
+ {id:'disp',t:'Disponibilidad del sistema',d:'Disponibilidad',ok:1,w:''},
+ {id:'det',t:'Tiempo de detección y resolución de incidentes',d:'Incidentes',ok:1,w:''},
+ {id:'cum',t:'Cumplimiento en auditorías normativas',d:'Cumplimiento',ok:1,w:''},
+ {id:'cap',t:'Personal capacitado y satisfacción de usuarios',d:'Personas',ok:1,w:''},
+ {id:'pol',t:'Número de políticas publicadas',ok:0,w:'Cuenta documentos, no resultados: puedes tener 14 políticas y que ninguna se cumpla.'},
+ {id:'reu',t:'Reuniones del comité realizadas',ok:0,w:'Mide actividad. Un comité puede reunirse cada semana sin mejorar un solo dato.'},
+ {id:'tb',t:'Terabytes almacenados',ok:0,w:'Más datos no significa mejores datos. No dice nada de calidad ni de uso.'},
+ {id:'tab',t:'Cantidad de tableros creados',ok:0,w:'Muchos tableros pueden ser el síntoma: cada área con su propia versión de la verdad.'}
+];
+const DIMS6=['Calidad','Rendimiento','Disponibilidad','Incidentes','Cumplimiento','Personas'];
+let pkOrder=shuffle(PICK.map(p=>p.id)),pkSel=new Set(),pkChk=false,pkMsg='';
+const DC={Calidad:'#5CC8FF',Rendimiento:'#A5F01C',Disponibilidad:'#FFC857',Incidentes:'#FF9B8A',Cumplimiento:'#C3A6FF',Personas:'#4FE3C1'};
+const VC='#8AA0B0';
+function drawPicks(){
+  $('#picks').innerHTML=pkOrder.map(id=>{
+    const p=PICK.find(x=>x.id===id),on=pkSel.has(id);
+    let c='';if(pkChk&&on)c=p.ok?' ok':' bad';
+    const col=p.ok?DC[p.d]:VC;
+    return '<button type="button" class="pk'+c+'" data-id="'+id+'" aria-pressed="'+on+'" style="--pc:'+col+'"'+(pkChk?' disabled':'')+'><span class="pt">'+p.t+'</span>'+(on?'<span class="bd" style="--bc:'+col+'">'+(p.ok?p.d:'Actividad')+'</span>':'')+'</button>';
+  }).join('');
+  const sel=[...pkSel].map(id=>PICK.find(p=>p.id===id));
+  const cov=sel.filter(p=>p.ok).map(p=>p.d);
+  const van=sel.filter(p=>!p.ok);
+  const legend='<ul class="cks" style="margin-top:.4rem">'+DIMS6.map(d=>'<li class="dk'+(cov.indexOf(d)>=0?' on':'')+'" style="--bc:'+DC[d]+'">'+d+'</li>').join('')+'</ul>';
+  const out=$('#pickOut');
+  if(!pkChk){
+    out.innerHTML='<h3>Tu tablero</h3><p class="stat">Elegidos '+pkSel.size+' de 6'+(pkMsg?' · '+pkMsg:'')+'</p><p>Cada indicador que eliges se marca con el color de su dimensión. Llena las seis. Los de color gris miden actividad, no resultados.</p>'+legend+'<div class="acts"><button class="btn pri" type="button" id="pkGo"'+(pkSel.size?'':' disabled')+'>Evaluar tablero</button><button class="btn ghost" type="button" id="pkSolve">Resolver por mí</button></div>';
+    return;
+  }
+  const miss=DIMS6.filter(d=>cov.indexOf(d)<0);
+  let h='<h3>Resultado</h3>'+legend;
+  if(van.length)h+='<ul class="lst">'+van.map(p=>'<li><b>'+p.t+'.</b> '+p.w+'</li>').join('')+'</ul>';
+  h+='<p class="verdict '+(!van.length&&!miss.length?'ok':'bad')+'">'+(!van.length&&!miss.length?'Tablero equilibrado: mide resultados en las seis dimensiones.':(van.length?'Sacaste indicadores de actividad. ':'')+(miss.length?'Te falta: '+miss.join(', ')+'.':''))+'</p>';
+  h+='<div class="acts"><button class="btn ghost" type="button" id="pkRe">Intentar de nuevo</button>'+((van.length||miss.length)?'<button class="btn pri" type="button" id="pkSolve">Resolver por mí</button>':'')+'</div>';
+  out.innerHTML=h;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.pk');
+  if(b&&!pkChk){
+    const id=b.dataset.id;
+    if(pkSel.has(id)){pkSel.delete(id);pkMsg=''}
+    else if(pkSel.size>=6){pkMsg='ya tienes 6, quita uno'}
+    else{pkSel.add(id);pkMsg=''}
+    drawPicks();return;
+  }
+  if(e.target.closest('#pkGo')){pkChk=true;drawPicks();return}
+  if(e.target.closest('#pkSolve')){pkSel=new Set(PICK.filter(p=>p.ok).map(p=>p.id));pkChk=true;pkMsg='';drawPicks();return}
+  if(e.target.closest('#pkRe')){pkSel.clear();pkChk=false;pkMsg='';drawPicks()}
+});
+drawPicks();
+
+/* ---------- laboratorios de marcar: calidad y accesos ---------- */
+function flagLab(o){
+  const tb=$(o.tb),out=$(o.out);
+  const St={f:new Set(),chk:false,cl:false};
+  const real=o.rows.map((r,i)=>r.e?i:-1).filter(i=>i>=0);
+  function draw(){
+    tb.innerHTML=o.rows.map((r,i)=>{
+      const on=St.f.has(i);
+      let cls='';if(St.chk)cls=(on===!!r.e)?'ok':'bad';
+      const gone=St.cl&&r.e&&r.e.auto==='del';
+      return '<tr data-i="'+i+'" class="'+cls+(gone?' gone':'')+'"><td><button type="button" class="fg" aria-pressed="'+on+'" aria-label="Marcar la fila '+(i+1)+'"'+(St.chk?' disabled':'')+'>'+(on?'✓':'')+'</button></td>'+o.cells(r,St).map(c=>'<td>'+c+'</td>').join('')+'</tr>';
+    }).join('');
+    out.innerHTML=o.panel(St,real);
+  }
+  tb.addEventListener('click',e=>{const tr=e.target.closest('tr');if(!tr||St.chk)return;const i=+tr.dataset.i;if(St.f.has(i))St.f.delete(i);else St.f.add(i);draw()});
+  out.addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]');if(!b)return;
+    const a=b.dataset.act;
+    if(a==='chk')St.chk=true;
+    if(a==='cl')St.cl=true;
+    if(a==='rs'){St.f.clear();St.chk=false;St.cl=false}
+    draw();
+  });
+  draw();
+  return {reset(){St.f.clear();St.chk=false;St.cl=false;draw()}};
+}
+const CR=[
+ {c:['101','Marta Ríos','marta.rios@correo.co','Cali','sep 2026']},
+ {c:['102','Marta Rios','marta.rios@correo.co','Cali','sep 2026'],e:{t:'Duplicado de la 101',d:'Consistencia',k:1,auto:'del'}},
+ {c:['103','Jorge Pérez','','Cali','oct 2026'],e:{t:'Falta el correo',d:'Completitud',k:2,auto:''}},
+ {c:['104','Luisa Gómez','luisa.gomez#correo.co','Palmira','ago 2026'],e:{t:'Correo con # en lugar de @',d:'Precisión',k:2,auto:'fix',fix:{k:2,v:'luisa.gomez@correo.co'}}},
+ {c:['105','Andrés Soto','andres.soto@correo.co','Sgo. de Cali','oct 2026'],e:{t:'Ciudad escrita distinto a las demás',d:'Consistencia',k:3,auto:'norm',fix:{k:3,v:'Cali'}}},
+ {c:['106','Paula Ruiz','paula.ruiz@correo.co','Cali','sep 2026']},
+ {c:['107','Camilo Vega','camilo.vega@correo.co','Yumbo','mar 2021'],e:{t:'Sin actualizar desde 2021',d:'Actualización',k:4,auto:''}},
+ {c:['108','Diana Mora','diana.mora@correo.co','Jamundí','oct 2026']},
+ {c:['109','Hernán Díaz','hernan.diaz@correo.co','Cali','sep 2026']},
+ {c:['110','Sara Lenis','sara.lenis@correo.co','Cali','oct 2026']}
+];
+const labCal=flagLab({tb:'#cqBody',out:'#cqOut',rows:CR,
+  cells:(r,St)=>r.c.map((v,k)=>{
+    let x=v;
+    if(St.cl&&r.e&&r.e.fix&&r.e.fix.k===k)x=r.e.fix.v;
+    if(!x)x='<em>vacío</em>';
+    if(St.chk&&r.e&&r.e.k===k&&!(St.cl&&r.e.fix&&r.e.fix.k===k))x='<span class="hl">'+x+'</span>';
+    return x;
+  }),
+  panel:(St,real)=>{
+    const n=St.f.size;
+    if(!St.chk)return '<h3>Tu revisión</h3><p>Marcaste '+n+' de 10 registros. Fíjate en duplicados, campos vacíos, formatos, escritura distinta y fechas viejas.</p><div class="acts"><button class="btn pri" type="button" data-act="chk"'+(n?'':' disabled')+'>Revisar</button></div>';
+    const hit=real.filter(i=>St.f.has(i)).length,fa=[...St.f].filter(i=>!CR[i].e).length;
+    let h='<h3>Resultado</h3><p>Acertaste '+hit+' de '+real.length+' errores reales y marcaste '+fa+' registros que estaban bien.</p><ul class="lst">'+real.map(i=>'<li><b>'+CR[i].c[0]+'</b> '+CR[i].e.t+' <span class="dm">'+CR[i].e.d+'</span></li>').join('')+'</ul>';
+    if(!St.cl)h+='<p class="stat">Tasa de errores real: <b>5 de 10, o 50 %</b>.</p><div class="acts"><button class="btn pri" type="button" data-act="cl">Limpieza automática</button><button class="btn ghost" type="button" data-act="rs">Intentar de nuevo</button></div>';
+    else h+='<p class="stat">Después de la limpieza: <b>2 de 9, o 22 %</b>. Se quitó el duplicado, se normalizó la ciudad y una regla de formato corrigió el correo. Faltan el correo y los datos de 2021: eso lo resuelve una persona, la automatización no inventa datos.</p><div class="meter" data-lv="mid"><i style="width:78%"></i></div><p class="stat">Calidad de la muestra: 50 % a 78 %</p><div class="acts"><button class="btn ghost" type="button" data-act="rs">Intentar de nuevo</button></div>';
+    return h;
+  }});
+const AR=[
+ {c:['08:12','ana.finanzas','Consulta las ventas del mes','Oficina Cali']},
+ {c:['02:07 sáb','pract.bi03','Exporta 214.000 clientes','IP externa'],e:{t:'Descarga masiva, de madrugada, desde fuera y con una cuenta de prácticas.',w:'Quién, cuándo y cómo'}},
+ {c:['09:40','carlos.comercial','Consulta inventario por tienda','Oficina Cali']},
+ {c:['11:15','luisa.caja12','Modifica precios de 380 productos','Oficina Cali'],e:{t:'Un rol de caja no debería cambiar la maestra de precios.',w:'Quién'}},
+ {c:['03:41','svc.etl','Carga nocturna de ventas','Servidor interno'],n:'Es normal: una carga programada. La hora sola no basta, hay que mirar el contexto.'},
+ {c:['13:02','ana.finanzas','Descarga el cierre en PDF','Oficina Cali']},
+ {c:['22:48','carlos.comercial','5 ingresos fallidos seguidos','Otro país'],e:{t:'Intentos fallidos desde un país donde la empresa no opera.',w:'Cuándo y cómo'}},
+ {c:['16:20','jorge.auditoria','Consulta la bitácora de accesos','Oficina Cali']}
+];
+const labAu=flagLab({tb:'#auBody',out:'#auOut',rows:AR,
+  cells:(r,St)=>r.c.map((v,k)=>(St.chk&&r.e&&k===2)?'<span class="hl">'+v+'</span>':v),
+  panel:(St,real)=>{
+    const n=St.f.size;
+    if(!St.chk)return '<h3>Tu auditoría</h3><p>Marcaste '+n+' de 8 líneas. Pregúntate por cada una: ¿es la persona correcta, en el momento correcto y de la forma correcta?</p><div class="acts"><button class="btn pri" type="button" data-act="chk"'+(n?'':' disabled')+'>Auditar</button></div>';
+    const hit=real.filter(i=>St.f.has(i)).length,fa=[...St.f].filter(i=>!AR[i].e).length;
+    let h='<h3>Resultado</h3><p>Detectaste '+hit+' de '+real.length+' anomalías y diste '+fa+' falsas alarmas.</p><ul class="lst">'+real.map(i=>'<li><b>'+AR[i].c[1]+'.</b> '+AR[i].e.t+' <span class="dm">'+AR[i].e.w+'</span></li>').join('')+'<li><b>svc.etl.</b> '+AR[4].n+'</li></ul>';
+    h+='<p class="stat">En el caso real, la descarga se descubrió 11 días después, por una revisión manual. Con reglas automáticas de horario, volumen y origen, la alerta llega en minutos.</p><div class="acts"><button class="btn ghost" type="button" data-act="rs">Intentar de nuevo</button></div>';
+    return h;
+  }});
+
+/* ---------- prueba de estrés ---------- */
+const fOn=v=>1.2+0.16*v*v,fCl=v=>1.3+0.22*v;
+let stArch='on',stV=1,stIv=null,stDone=false;
+const SX=v=>40+(v-1)/9*300,SY=t=>170-Math.min(t,20)/20*150;
+function drawSt(){
+  const f=stArch==='on'?fOn:fCl,t=f(stV);
+  let h='<line class="ax" x1="40" y1="20" x2="40" y2="170"/><line class="ax" x1="40" y1="170" x2="340" y2="170"/>';
+  h+='<line class="sla" x1="40" x2="340" y1="'+SY(5).toFixed(1)+'" y2="'+SY(5).toFixed(1)+'"/><text x="342" y="'+(SY(5)+4).toFixed(1)+'" text-anchor="end" dy="-6">Umbral 5 s</text>';
+  [[0,'0 s'],[5,'5 s'],[10,'10 s'],[20,'20 s']].forEach(a=>{h+='<text x="34" y="'+(SY(a[0])+4).toFixed(1)+'" text-anchor="end">'+a[1]+'</text>'});
+  [[1,'×1'],[5,'×5'],[10,'×10']].forEach(a=>{h+='<text x="'+SX(a[0]).toFixed(1)+'" y="188" text-anchor="middle">'+a[1]+'</text>'});
+  const path=fn=>{let d='';for(let v=1;v<=10.001;v+=.25)d+=(d?'L':'M')+SX(v).toFixed(1)+','+SY(fn(v)).toFixed(1);return d};
+  h+='<path class="c1'+(stArch==='on'?'':' dim')+'" d="'+path(fOn)+'"/><path class="c2'+(stArch==='cl'?'':' dim')+'" d="'+path(fCl)+'"/>';
+  h+='<text class="lg" x="48" y="30" style="fill:var(--alert)">Servidor propio</text><text class="lg" x="48" y="44" style="fill:var(--pc-i)">Nube elástica</text>';
+  h+='<circle cx="'+SX(stV).toFixed(1)+'" cy="'+SY(t).toFixed(1)+'" r="6" fill="'+(stArch==='on'?'var(--alert)':'var(--pc-i)')+'" stroke="var(--paper)" stroke-width="2"/>';
+  $('#stSvg').innerHTML=h;
+  $('#stT').textContent=fmt(t)+' s';
+  $('#stV').textContent='Volumen ×'+fmt(stV)+', unos '+Math.round(50*stV)+' millones de filas';
+  const s=$('#stS');
+  if(t>5){s.className='av-s bad';s.textContent='Supera el umbral: los usuarios abandonan la consulta.'}
+  else if(t>4){s.className='av-s mid';s.textContent='Cerca del umbral: queda poco margen.'}
+  else{s.className='av-s ok';s.textContent='Dentro del umbral aceptable.'}
+  $('#stRange').value=stV;
+}
+function stInsight(){
+  $('#stI').textContent='Punto de quiebre del servidor propio: ×4,9, unos 244 millones de filas. La nube elástica se mantuvo bajo el umbral en todo el rango, pero su costo crece con el uso: evaluarla también es parte de la evaluación.';
+}
+$('#stRange').addEventListener('input',e=>{stV=+e.target.value;drawSt();if(stV>=4.9&&stArch==='on')stInsight()});
+$$('[data-a]').forEach(b=>b.addEventListener('click',()=>{stArch=b.dataset.a;$$('[data-a]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));drawSt()}));
+$('#stRun').addEventListener('click',()=>{
+  if(stIv)return;
+  stV=1;drawSt();$('#stI').textContent='';
+  $('#stRun').disabled=true;
+  stIv=setInterval(()=>{
+    stV=Math.min(10,+(stV+.1).toFixed(1));drawSt();
+    if(stV>=10){clearInterval(stIv);stIv=null;$('#stRun').disabled=false;stInsight()}
+  },reduce?5:45);
+});
+function resetSt(){clearInterval(stIv);stIv=null;stArch='on';stV=1;$$('[data-a]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.a==='on')));$('#stRun').disabled=false;$('#stI').textContent='';drawSt()}
+drawSt();
+
+/* ---------- matriz de riesgos ---------- */
+const RK=[
+ {n:'Violación de seguridad: acceso no autorizado a datos de clientes',p:2,i:3,c:'MFA, mínimo privilegio y monitoreo de accesos',w:'Ya hubo una descarga masiva en el mes 9. La probabilidad no es baja y el impacto sobre 1,2 millones de clientes es alto.'},
+ {n:'Pérdida de datos: respaldos que no se prueban',p:1,i:3,c:'Copias más frecuentes y pruebas de restauración',w:'Hay copias, pero nadie las prueba. Probabilidad baja, impacto alto.'},
+ {n:'Errores en los procesos de datos: duplicados e inventario',p:3,i:2,c:'Validaciones y automatización de la calidad',w:'Ocurre todos los meses, con impacto medio en las decisiones.'},
+ {n:'Incumplimiento normativo',p:2,i:2,c:'Auditorías de cumplimiento y procedimiento para solicitudes',w:'El reclamo de 40 días ya apareció. Riesgo medio.'},
+ {n:'Saturación del sistema en temporada alta',p:2,i:2,c:'Pruebas de estrés y escalabilidad en la nube',w:'Se repite cada diciembre y degrada el servicio, sin llegar a ser crítico.'}
+];
+const RH=["Pista: hubo una descarga masiva de 214.000 registros en el mes 9.", "Pista: hay copias de seguridad, pero nadie prueba restaurarlas.", "Pista: 31.000 duplicados y un inventario que no coincide, cada mes.", "Pista: una solicitud tardó 40 días y no hay responsable claro.", "Pista: el sistema se degrada cada diciembre."];
+const LV=['','Baja','Media','Alta'];
+let rkP=[],rkI=[],rkRef=false;
+function rkInit(){rkP=RK.map(()=>2);rkI=RK.map(()=>2);rkRef=false}
+function drawRk(){
+  $('#rkRows').innerHTML=RK.map((r,k)=>'<div class="rk"><span class="rn">'+(k+1)+'</span><div><b>'+r.n+'</b><span class="pista">'+RH[k]+'</span></div><button type="button" class="lv" data-k="'+k+'" data-w="p" data-v="'+rkP[k]+'" aria-label="Probabilidad: '+LV[rkP[k]]+'">'+LV[rkP[k]]+'</button><button type="button" class="lv" data-k="'+k+'" data-w="i" data-v="'+rkI[k]+'" aria-label="Impacto: '+LV[rkI[k]]+'">'+LV[rkI[k]]+'</button><span class="sco" data-l="'+(rkP[k]*rkI[k]>=6?'3':rkP[k]*rkI[k]>=3?'2':'1')+'">'+(rkP[k]*rkI[k])+'</span></div>').join('');
+  const order=RK.map((r,k)=>k).sort((a,b)=>rkP[b]*rkI[b]-rkP[a]*rkI[a]||a-b);
+  let hm='<div class="hm"><span></span><span class="ax">Impacto baja</span><span class="ax">Impacto media</span><span class="ax">Impacto alta</span>';
+  [3,2,1].forEach(p=>{hm+='<span class="ax rl">Prob. '+LV[p].toLowerCase()+'</span>';[1,2,3].forEach(i=>{const s=p*i;const dots=RK.map((r,k)=>(rkP[k]===p&&rkI[k]===i)?'<i>'+(k+1)+'</i>':'').join('');hm+='<div class="hc" data-l="'+(s>=6?'3':s>=3?'2':'1')+'">'+dots+'</div>'})});
+  hm+='</div>';
+  let h='<h3>Mapa de calor</h3>'+hm+'<p class="stat">Ataca primero el <b>'+(order[0]+1)+'</b>: '+RK[order[0]].n.split(':')[0]+'. Acción: <b>'+RK[order[0]].c+'</b>.</p>';
+  if(rkRef)h+='<p class="stat">Lectura del caso (probabilidad por impacto): '+RK.map((r,k)=>(k+1)+' '+LV[r.p]+' por '+LV[r.i]).join('; ')+'. No hay una única respuesta correcta: lo importante es justificar con la evidencia. La descarga del mes 9 ya ocurrió, así que la violación de seguridad no puede puntuar bajo.</p>';
+  h+='<div class="acts" style="margin-top:.4rem"><button class="btn ghost" type="button" id="rkRef">'+(rkRef?'Ocultar la lectura del caso':'Comparar con la lectura del caso')+'</button></div>';
+  $('#rkOut').innerHTML=h;
+}
+$('#rkRows').addEventListener('click',e=>{const b=e.target.closest('.lv');if(!b)return;const k=+b.dataset.k,a=b.dataset.w==='p'?rkP:rkI;a[k]=a[k]%3+1;drawRk()});
+$('#rkOut').addEventListener('click',e=>{if(e.target.closest('#rkRef')){rkRef=!rkRef;drawRk()}});
+rkInit();drawRk();
+
+/* ---------- ordenar la respuesta al incidente ---------- */
+const ORD=[
+ {k:'a',t:'Detectar la descarga de las 2:07 a. m. con una alerta automática',w:'La detección temprana reduce el daño. En el caso pasaron 11 días porque la revisión era manual. Con alertas por horario, volumen y origen, serían minutos.'},
+ {k:'b',t:'Contener: bloquear la cuenta y cortar la sesión externa',w:'Contener es frenar la propagación antes de investigar. Se aíslan cuentas y sistemas afectados para que el incidente no crezca.'},
+ {k:'c',t:'Evaluar el impacto: qué datos salieron y de cuántos clientes',w:'Sin conocer el alcance no se puede decidir a quién avisar ni qué tan grave es el incidente.'},
+ {k:'d',t:'Resolver: restablecer, rotar credenciales y avisar a quien corresponda',w:'Se corrige la causa, se restablece la operación y se comunica a las áreas, a los titulares y a las autoridades que corresponda.'},
+ {k:'e',t:'Prevenir: agregar MFA, límites de exportación y alertas por volumen',w:'Las medidas preventivas evitan que el mismo incidente se repita. Son el puente hacia la mejora continua.'},
+ {k:'f',t:'Aprender: medir tiempos, revisar el plan y hacer un simulacro',w:'Medir el tiempo de detección y resolución convierte el incidente en un KPI y en mejoras concretas del plan.'}
+];
+const GOOD=['a','b','c','d','e','f'];
+let order=[],checked=false,selK=null;
+function newOrder(){do{order=shuffle(GOOD.slice())}while(order.join()===GOOD.join());checked=false;selK=null}
+function infoPanel(){
+  const p=$('#ordInfo');
+  if(!checked){p.innerHTML='<h3>Cómo responder a un incidente</h3><p>La guía describe cuatro momentos: detección temprana, contención, resolución y medidas preventivas. Aquí se suman evaluar el impacto y aprender del caso.</p><p>Ordena los seis pasos con las flechas y verifica.</p>';return}
+  const ok=order.filter((k,i)=>GOOD[i]===k).length;
+  if(selK===null){p.innerHTML='<p class="score">'+ok+' / 6</p><h3>'+(ok===6?'Orden correcto':'Pasos en su lugar')+'</h3><p>Toca un paso de la lista para leer por qué va donde va.</p>';return}
+  const it=ORD.find(o=>o.k===selK);
+  p.innerHTML='<h3>'+it.t+'</h3><p><b>Posición esperada:</b> '+(GOOD.indexOf(selK)+1)+'</p><p>'+it.w+'</p>';
+}
+function renderOrd(){
+  const ol=$('#ord');ol.innerHTML='';
+  order.forEach((k,i)=>{
+    const it=ORD.find(o=>o.k===k);const li=document.createElement('li');
+    li.className=(checked?(GOOD[i]===k?'ok':'bad'):'')+(selK===k?' sel':'');
+    li.innerHTML='<span class="n">'+(i+1)+'</span><button type="button" class="t" data-k="'+k+'">'+it.t+'</button>'+
+      '<span class="mv"><button type="button" data-i="'+i+'" data-d="-1" aria-label="Subir: '+it.t+'"'+(i===0?' disabled':'')+'>↑</button><button type="button" data-i="'+i+'" data-d="1" aria-label="Bajar: '+it.t+'"'+(i===order.length-1?' disabled':'')+'>↓</button></span>';
+    ol.appendChild(li);
+  });
+  infoPanel();
+}
+$('#ord').addEventListener('click',e=>{
+  const t=e.target.closest('.t');
+  if(t){if(checked){selK=t.dataset.k;renderOrd()}return}
+  const b=e.target.closest('.mv button');if(!b||b.disabled)return;
+  const i=+b.dataset.i,j=i+(+b.dataset.d);
+  const x=order[i];order[i]=order[j];order[j]=x;
+  checked=false;selK=null;renderOrd();
+  const nb=$('#ord li:nth-child('+(j+1)+') .mv button[data-d="'+b.dataset.d+'"]');if(nb&&!nb.disabled)nb.focus();
+});
+$('#ordCheck').addEventListener('click',()=>{checked=true;selK=null;renderOrd()});
+$('#ordShow').addEventListener('click',()=>{order=GOOD.slice();checked=true;selK=null;renderOrd()});
+$('#ordReset').addEventListener('click',()=>{newOrder();renderOrd()});
+newOrder();renderOrd();
+
+/* ---------- radar: tres ciclos de mejora ---------- */
+const DIMS=['Calidad','Rendimiento','Seguridad','Cumplimiento','Incidentes','Cultura'];
+const BASE=[71,50,56,58,25,22];
+const STRATS=[
+ {k:'Optimización de procesos',d:[10,14,0,2,4,2]},
+ {k:'Automatización',d:[16,8,4,2,8,0]},
+ {k:'Capacitación continua',d:[8,0,8,10,6,24]},
+ {k:'Tecnologías avanzadas (IA)',d:[10,10,10,0,4,0]},
+ {k:'Infraestructura en la nube',d:[0,24,6,0,4,0]},
+ {k:'Monitoreo continuo',d:[6,4,10,2,20,0]},
+ {k:'Gestión de incidentes',d:[0,0,6,6,24,4]},
+ {k:'Mejora continua',d:[5,5,5,8,5,8]},
+ {k:'Uso de KPIs',d:[6,4,4,6,6,6]},
+ {k:'Colaboración entre áreas',d:[10,0,2,8,2,16]}
+];
+let rv=BASE.slice(),rPicks=[],rOn=0,rLog=[];
+const CX=170,CY=122,RR=80;
+const pt=(i,v)=>{const a=-Math.PI/2+i*Math.PI/3;return [CX+Math.cos(a)*RR*v/100,CY+Math.sin(a)*RR*v/100]};
+const poly=vs=>vs.map((v,i)=>pt(i,v).map(n=>n.toFixed(1)).join(',')).join(' ');
+const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+function drawRd(){
+  const wk=rv.indexOf(Math.min.apply(null,rv));
+  let h='';
+  [25,50,75,100].forEach(r=>{h+='<polygon class="rg" points="'+poly(DIMS.map(()=>r))+'"/>'});
+  DIMS.forEach((_,i)=>{const p=pt(i,100);h+='<line class="ax" x1="'+CX+'" y1="'+CY+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'"/>'});
+  h+='<polygon class="pb" points="'+poly(BASE)+'"/><polygon class="pn" points="'+poly(rv)+'"/>';
+  DIMS.forEach((n,i)=>{
+    const p=pt(i,122),a=-Math.PI/2+i*Math.PI/3,c=Math.cos(a);
+    const anc=Math.abs(c)<.2?'middle':(c>0?'start':'end');
+    const y=p[1]+(i===0?-12:i===3?6:-2);
+    h+='<text class="'+(i===wk?'wk':'')+'" text-anchor="'+anc+'"><tspan x="'+p[0].toFixed(1)+'" y="'+y.toFixed(1)+'">'+n+'</tspan><tspan class="vl'+(i===wk?' wk':'')+'" x="'+p[0].toFixed(1)+'" dy="12">'+Math.round(rv[i])+'</tspan></text>';
+  });
+  $('#rdSvg').innerHTML=h;
+  $('#rdScore').innerHTML='Índice de salud: <b>'+Math.round(avg(rv))+'</b> (inicio: 47). Línea punteada: punto de partida.';
+}
+function drawStrat(){
+  const done=rPicks.length>=3;
+  const wk=rv.indexOf(Math.min.apply(null,rv));
+  $('#rdRound').innerHTML=done?'Los 3 turnos terminaron':'<b>Turno '+(rPicks.length+1)+' de 3.</b> Dimensión más débil ahora: <b style="color:var(--alert)">'+DIMS[wk]+' ('+Math.round(rv[wk])+')</b>';
+  $('#rdStrat').innerHTML=STRATS.map((s,k)=>{
+    const u=rPicks.indexOf(k);
+    const up=s.d.map((d,i)=>[d,i]).filter(x=>x[0]>=4).sort((x,y)=>y[0]-x[0]).slice(0,3).map(x=>DIMS[x[1]]);
+    return '<button type="button" class="sg'+(u>=0?' used':'')+'" data-k="'+k+'"'+(done||u>=0?' disabled':'')+'><b>'+s.k+(u>=0?' <i class="cn">turno '+(u+1)+'</i>':'')+'</b><small>Sube: '+up.join(', ')+'</small></button>';
+  }).join('');
+  const out=$('#rdOut');
+  if(!rLog.length){out.innerHTML='<p class="stat" style="margin:0">Cada estrategia dice qué dimensiones sube. Elige la que más ayude a la dimensión en rojo. Ojo: rinde menos donde ya estás bien.</p>';return}
+  out.innerHTML=rLog.map(l=>'<p class="stat" style="margin:0 0 .3rem">'+l+'</p>').join('')+(done?'<p class="verdict '+(rDir>=2?'ok':'bad')+'" style="margin-top:.4rem">Apuntaste al punto más débil en '+rDir+' de 3 turnos. '+(rDir>=2?'Así se mejora: medir, priorizar y repetir.':'Prueba de nuevo mirando siempre la dimensión en rojo antes de elegir.')+'</p>':'');
+}
+let rDir=0;
+$('#rdStrat').addEventListener('click',e=>{
+  const b=e.target.closest('.sg');if(!b||b.disabled||rPicks.length>=3)return;
+  const k=+b.dataset.k,s=STRATS[k];
+  const weak=rv.indexOf(Math.min.apply(null,rv));
+  const eff=s.d.map((d,i)=>d*(1-rv[i]/130));
+  const mx=Math.max.apply(null,eff);
+  const dir=eff[weak]>=mx*.75;if(dir)rDir++;
+  const top=eff.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).slice(0,2).filter(x=>x[0]>=1).map(x=>DIMS[x[1]]+' +'+Math.round(x[0]));
+  const before=avg(rv);
+  rv=rv.map((v,i)=>Math.min(100,v+eff[i]));
+  rPicks.push(k);
+  rLog.push('<b>Turno '+rPicks.length+', '+s.k+':</b> '+top.join(', ')+'. '+(dir?'Atacó la dimensión más débil ('+DIMS[weak]+').':'No atacó la más débil ('+DIMS[weak]+').')+' Índice '+Math.round(before)+' a '+Math.round(avg(rv))+'.');
+  drawRd();drawStrat();
+});
+function resetRd(){rv=BASE.slice();rPicks=[];rLog=[];rDir=0;drawRd();drawStrat()}
+$('#rdReset').addEventListener('click',resetRd);
+drawRd();drawStrat();
+
+/* ---------- quiz (una pregunta a la vez) ---------- */
+const QB=[
+ {p:'La junta pide “un número” que diga si el gobierno de datos funciona. ¿Qué herramienta se lo da?',
+  o:['Indicadores clave de rendimiento (KPIs)','Una política de datos más extensa','Más reuniones del comité','Un nuevo software de BI sin métricas definidas'],
+  e:'Los KPIs son métricas específicas que miden el éxito del gobierno de datos: precisión, tiempo de respuesta, disponibilidad y seguridad.'},
+ {p:'Finanzas y Comercial reportan ventas distintas. ¿Qué dimensión de la calidad de datos falla principalmente?',
+  o:['Consistencia','Disponibilidad','Cifrado','Capacitación'],
+  e:'Dos fuentes que no coinciden son un problema de consistencia. La calidad exige datos precisos, completos, consistentes y actualizados.'},
+ {p:'¿Cuál de estas NO es una característica de los datos de alta calidad según la guía?',
+  o:['Que sean muy voluminosos','Que sean precisos','Que sean completos','Que estén actualizados'],
+  e:'La guía habla de datos precisos, completos, consistentes y actualizados. Tener muchos datos no los hace buenos.'},
+ {p:'Una revisión manual mensual descubrió una descarga masiva 11 días después. ¿Qué la habría detectado antes?',
+  o:['Monitoreo y auditoría automáticos con alertas','Una reunión de seguimiento más larga','Un respaldo más frecuente','Más capacidad de almacenamiento'],
+  e:'El monitoreo proactivo detecta accesos no autorizados o anomalías rápidamente y permite corregirlos antes de que causen mayores inconvenientes.'},
+ {p:'¿Qué mide el KPI “tasa de errores en los datos”?',
+  o:['La cantidad de errores o inconsistencias detectadas a lo largo del tiempo','Cuánto tarda el sistema en responder una consulta','Cuántos usuarios hay conectados','El costo mensual de almacenamiento'],
+  e:'La tasa de errores mide los errores o inconsistencias en los conjuntos de datos. El tiempo de respuesta es otro KPI distinto.'},
+ {p:'La empresa quiere saber si está por debajo de los estándares de su industria. ¿Qué técnica usa?',
+  o:['Evaluación comparativa (benchmarking)','Prueba de estrés','Encuesta interna de satisfacción','Auditoría de respaldos'],
+  e:'El benchmarking compara el rendimiento con otras empresas del sector, identifica brechas y da ideas para mejorar.'},
+ {p:'Se proyecta duplicar el volumen de datos. ¿Qué técnica evalúa si el sistema lo soportará?',
+  o:['Pruebas de estrés y simulaciones de crecimiento','Encuestas a los usuarios','Análisis de riesgos únicamente','Capacitación del personal'],
+  e:'La evaluación de la escalabilidad verifica que el rendimiento se mantenga a medida que crece el volumen, usando pruebas de estrés y simulaciones.'},
+ {p:'¿Cuál es el orden más lógico de la respuesta a un incidente?',
+  o:['Detectar, contener, resolver y prevenir','Resolver, prevenir, detectar y contener','Prevenir, resolver, contener y detectar','Contener, prevenir, detectar y resolver'],
+  e:'La gestión eficaz incluye detección temprana, contención, resolución y adopción de medidas preventivas para evitar futuros incidentes.'},
+ {p:'¿Para qué sirve el análisis de riesgos en la evaluación del rendimiento?',
+  o:['Para identificar y evaluar riesgos y tomar medidas preventivas antes de que ocurran incidentes','Para calcular el salario del equipo de datos','Para reemplazar las auditorías internas','Para decidir el color de los tableros'],
+  e:'Permite evaluar el gobierno de datos desde la perspectiva de riesgos, por ejemplo mejorando controles de seguridad o haciendo copias más frecuentes.'},
+ {p:'¿Qué ventaja principal da automatizar las evaluaciones?',
+  o:['Evaluaciones continuas sin intervención manual, para que el equipo se enfoque en acciones correctivas','Eliminar la necesidad de tener KPIs','Quitar todas las auditorías','Reducir a cero los errores humanos para siempre'],
+  e:'La automatización agiliza la detección de problemas y la generación de informes, y libera al equipo de tareas operativas.'},
+ {p:'La mejora continua requiere principalmente:',
+  o:['Ciclos de retroalimentación donde se analizan las evaluaciones y se implementan acciones correctivas o de optimización de forma regular','Una gran reforma cada cinco años','Congelar las políticas para que no cambien','Contratar más personal de TI'],
+  e:'La mejora continua es un proceso estratégico y permanente: revisión constante de procesos, nuevas tecnologías y capacitación del personal.'},
+ {p:'Un hospital implementó una herramienta que detecta errores en las historias clínicas en tiempo real y notifica al personal. ¿Qué estrategia aplicó?',
+  o:['Monitoreo continuo','Benchmarking','Cifrado de datos','Reducción de personal'],
+  e:'Es monitoreo continuo: detección automática de errores y notificación. Mejoró la calidad de los datos y redujo el tiempo de corrección.'},
+ {p:'Una compañía de telecomunicaciones migró parte de su infraestructura a la nube y redujo más del 50 % el tiempo de procesamiento. ¿Qué estrategia ilustra?',
+  o:['Optimización de la infraestructura de datos','Capacitación del personal','Evaluación de cumplimiento','Encuestas de usuarios'],
+  e:'La mejora continua de la infraestructura tecnológica es clave para que el gobierno de datos sea eficiente y escalable.'},
+ {p:'¿Por qué el gobierno de datos no debe ser responsabilidad exclusiva de TI?',
+  o:['Porque los datos son un recurso de todas las áreas y la colaboración asegura una gestión coherente','Porque TI no tiene los conocimientos necesarios','Porque así se ahorra el presupuesto de TI','Porque las normas lo prohíben'],
+  e:'La colaboración interdepartamental asegura que los datos se gestionen de manera coherente y se aprovechen al máximo.'},
+ {p:'¿Por qué se revisan periódicamente los KPIs?',
+  o:['Porque deben reflejar las nuevas prioridades, por ejemplo al adoptar IA para analizar datos','Porque los KPIs caducan cada mes','Porque así se justifica el comité','Porque la norma lo exige cada 30 días'],
+  e:'A medida que la organización evoluciona, los KPIs se ajustan: con tecnologías avanzadas se mide también la eficiencia y calidad de esos análisis.'},
+ {p:'¿Qué normas cita la guía como ejemplo de evaluaciones de cumplimiento normativo?',
+  o:['El GDPR en Europa y la Ley de Protección de Datos Personales en Colombia','Solo normas internas de la empresa','Únicamente normas de calidad ISO de manufactura','Ninguna, porque el cumplimiento no se evalúa'],
+  e:'La guía menciona el GDPR y la Ley 1581 de Colombia como ejemplos de normativas que exigen auditorías regulares y estar listos ante los reguladores.'},
+ {p:'Un banco combina evaluación continua de riesgos, capacitación en ciberseguridad, cifrado y autenticación multifactor. ¿Qué enfoque ilustra?',
+  o:['Mejora continua centrada en la seguridad de los datos','Optimización de rutas de transporte','Reducción del volumen de datos','Benchmarking de precios'],
+  e:'Es un enfoque proactivo que fortalece la seguridad y mejora la confianza de los clientes en la capacidad del banco para proteger su información.'}
+];
+let QZ=[],qi=0,qOk=0,qDone=false,qLast=null;
+function drawQuiz(){
+  QZ=shuffle(QB.slice()).slice(0,8).map(q=>({p:q.p,e:q.e,o:shuffle(q.o.map((t,k)=>({t:t,ok:k===0})))}));
+  qi=0;qOk=0;qDone=false;renderQ();
+}
+function renderQ(){
+  const box=$('#quiz-box');
+  if(qi>=QZ.length){
+    qLast=qOk;
+    box.innerHTML='<div class="q"><p class="qn">Resultado</p><p class="score-big">'+qOk+' / '+QZ.length+'</p><p class="insight">'+(qOk>=7?'Dominas el tema. Pasa al cierre.':qOk>=5?'Buen avance. Repasa las técnicas y las estrategias en lo que fallaste.':'Vuelve a los pasos de cada concepto y prueba con otro set.')+'</p><div class="acts"><button class="btn pri" type="button" id="qNew">Sortear otro set</button><button class="btn ghost" type="button" data-next>Ir al cierre</button></div></div>';
+    return;
+  }
+  const q=QZ[qi];qDone=false;
+  box.innerHTML='<article class="q"><p class="qn">Pregunta '+(qi+1)+' de '+QZ.length+' · Aciertos '+qOk+'</p><h3>'+q.p+'</h3><div class="qopts">'+q.o.map((o,k)=>'<button type="button" class="qo" data-q="'+k+'">'+o.t+'</button>').join('')+'</div><div class="fb" hidden aria-live="polite"></div><div class="acts" id="qAct" hidden><button class="btn pri" type="button" id="qNextQ">'+(qi===QZ.length-1?'Ver resultado':'Siguiente pregunta')+'</button></div></article>';
+}
+$('#quiz-box').addEventListener('click',e=>{
+  if(e.target.closest('#qNew')){drawQuiz();return}
+  if(e.target.closest('#qNextQ')){qi++;renderQ();return}
+  const b=e.target.closest('.q .qo');if(!b||b.disabled||qDone)return;
+  const q=QZ[qi],k=+b.dataset.q,card=b.closest('.q');
+  const good=q.o[k].ok;qDone=true;if(good)qOk++;
+  $$('.qo',card).forEach((x,j)=>{x.disabled=true;if(q.o[j].ok)x.classList.add(j===k?'ok':'key');if(j===k&&!good)x.classList.add('bad')});
+  const fb=$('.fb',card);fb.innerHTML='<p class="res '+(good?'ok':'bad')+'">'+(good?'Correcto.':'No es esa.')+'</p><p>'+q.e+'</p>';fb.hidden=false;
+  $('#qAct').hidden=false;
+});
+drawQuiz();
+
+/* ---------- cierre ---------- */
+function summary(){
+  const ids=Object.keys(AP),ok=ids.filter(k=>AP[k]).length;
+  let t=ids.length?'Resolviste '+ids.length+' de '+ITEMS.length+' retos del caso y acertaste '+ok+'. ':'Aún no resolviste ningún reto del caso. ';
+  if(qLast!==null)t+='En el quiz obtuviste '+qLast+' de 8.';
+  $('#sum').textContent=t;
+}
+function realPicks(){return [...pkSel].map(id=>PICK.find(p=>p.id===id)).filter(p=>p.ok).map(p=>p.t.charAt(0).toLowerCase()+p.t.slice(1))}
+function list(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' y '+a[a.length-1]}
+function fillBrief(){
+  const rp=realPicks();
+  const kp=rp.length?list(rp):'tasa de errores en los datos, tiempo de respuesta de consultas, disponibilidad del sistema, tiempo de detección y resolución de incidentes, cumplimiento en auditorías normativas y personal capacitado';
+  $('#b1').textContent='Hoy no lo sabemos con certeza, porque no medimos: la primera medición da un índice de salud de 47 sobre 100. Propongo un tablero mensual con '+kp+', y dejar de reportar métricas de actividad como políticas publicadas o reuniones del comité.';
+  $('#b2').textContent='Una evaluación continua y automatizada: monitoreo y auditoría de accesos con alertas, validaciones de calidad de datos, encuestas y auditorías internas, benchmarking con el sector, análisis de riesgos, pruebas de estrés de escalabilidad y revisión periódica del cumplimiento de la Ley 1581 y del GDPR.';
+  if(rPicks.length){
+    $('#b3').textContent='Plan de 90 días: '+list(rPicks.map(k=>STRATS[k].k.toLowerCase()))+'. En la simulación el índice de salud pasa de 47 a '+Math.round(avg(rv))+'. Se prioriza lo más débil: personal capacitado (22 %) y respuesta a incidentes (25 de 100), con ciclos trimestrales de retroalimentación.';
+  }else{
+    $('#b3').textContent='Plan de 90 días: capacitación continua, monitoreo continuo y gestión de incidentes, porque personal capacitado (22 %) y respuesta a incidentes (25 de 100) son las dimensiones más débiles. Después, automatización de la calidad de datos y ciclos trimestrales de retroalimentación.';
+  }
+  $('#b4').textContent='Otros sectores ya lo lograron: un minorista automatizó el análisis con IA, un hospital monitoreó la calidad en tiempo real, un banco combinó riesgos, capacitación, cifrado y MFA, y una telefónica migró a la nube y bajó más de 50 % su tiempo de procesamiento. Para sostenerlo, revisaremos KPIs, calidad, seguridad, incidentes y cumplimiento cada vez que cambie el entorno. Meta del año 2: índice de 91.';
+  const ids=Object.keys(AP),ok=ids.filter(k=>AP[k]).length;
+  $('#briefSt').textContent=ids.length?'Retos resueltos: '+ok+' correctos de '+ids.length:'Aún no resolviste los retos del caso.';
+}
+function briefText(){
+  let t='Informe a la junta, Supermercados La Ceiba (caso ficticio)\n';
+  $$('#brief .bf').forEach(b=>{t+='\n'+$('h3',b).textContent+'\n'+$('p',b).textContent+'\n'});
+  return t;
+}
+$('#copyBrief').addEventListener('click',async()=>{
+  fillBrief();
+  const txt=briefText(),m=$('#copyMsg');
+  try{await navigator.clipboard.writeText(txt);m.textContent='Copiado al portapapeles.';return}catch(e){}
+  try{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');document.body.removeChild(ta);m.textContent=ok?'Copiado al portapapeles.':'No pude copiar: selecciona el texto y cópialo.'}catch(e){m.textContent='No pude copiar: selecciona el texto y cópialo.'}
+});
+updHud();
+
+/* ---------- reiniciar ---------- */
+function resetAll(){
+  Object.keys(AP).forEach(k=>{delete AP[k]});
+  buildItems();updHud();
+  tlI=0;renderTl();
+  qLast=null;drawQuiz();
+  newOrder();renderOrd();
+  pkOrder=shuffle(PICK.map(p=>p.id));pkSel.clear();pkChk=false;pkMsg='';drawPicks();
+  labCal.reset();labAu.reset();
+  resetSt();
+  rkInit();drawRk();
+  resetRd();
+  scPrev=0;renderRec(0);
+  $$('.redact').forEach(b=>{b.setAttribute('aria-pressed','false');b.setAttribute('aria-label','Dato tachado, pulsa para mostrar')});
+  $('#copyMsg').textContent='';
+  go(0);
+}
+
+/* ---------- arranque ---------- */
+renderRec(0);
+go(fromHash(),true);
+})();
+</script>
+</body>
+</html>
